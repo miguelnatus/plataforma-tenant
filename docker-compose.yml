@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: plataforma_user
+    environment:
+      POSTGRES_PASSWORD: "Ozoutros@123"
+      POSTGRES_DB: "plataforma_user"
+      # POSTGRES_USER: "postgres"  # opcional (padrão da imagem)
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
