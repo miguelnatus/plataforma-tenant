@@ -22,7 +22,7 @@ ALLOWED_HOSTS = ['*']
 SHARED_APPS = [
     'django_tenants',
     'app',
-    'client_app',
+    # 'client_app',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
