@@ -1,2 +1,82 @@
-<h1>Home Anna Sebba</h1>
-<p>Welcome to the Anna Sebba tenant home page!</p>
+{% extends "annasebba/base.html" %}
+{% block title %}{{ request.tenant.name }} – Conteúdo + Produtos{% endblock %}
+
+{% block hero %}
+<section class="border-b">
+  <div class="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-center">
+    <div>
+      <h1 class="text-3xl md:text-5xl font-semibold leading-tight">{{ request.tenant.name }} – Clube do Livro</h1>
+      <p class="mt-3 text-zinc-600">Ajudo você a tornar o conhecimento real.<br />Clube do Livro<br />Marketing político</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a class="px-4 py-2 bg-zinc-900 text-white rounded" href="/assinar">Assinar publicação</a>
+        <a class="px-4 py-2 border rounded" href="/criar">Criar/Vender produto</a>
+      </div>
+    </div>
+    <div class="bg-zinc-50 rounded p-6 border">
+      <div class="h-40 rounded bg-white border flex items-center justify-center text-zinc-500">Preview</div>
+      <p class="mt-3 text-sm text-zinc-600">Experiência de leitura e compra integrada.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="flex items-center gap-6 border-b">
+  <button class="py-3 border-b-2 border-zinc-900">Conteúdos</button>
+  <button class="py-3 text-zinc-500 hover:text-zinc-800">Produtos</button>
+  <div class="ml-auto flex items-center gap-2">
+    <span class="text-sm text-zinc-600">Visualização</span>
+    <button class="px-2 py-1 border rounded">Lista</button>
+    <button class="px-2 py-1 border rounded bg-zinc-100">Grade</button>
+  </div>
+</div>
+
+<section class="grid md:grid-cols-3 gap-8 mt-8">
+  <div class="md:col-span-2 space-y-6">
+    <article class="border rounded p-4">
+      <h3 class="font-medium">Post em destaque</h3>
+      <p class="text-sm text-zinc-600 mt-1">Resumo do conteúdo, com CTA para ler mais.</p>
+    </article>
+    <div class="grid sm:grid-cols-2 gap-6">
+      <article class="border rounded p-4">Post card</article>
+      <article class="border rounded p-4">Post card</article>
+      <article class="border rounded p-4">Post card</article>
+      <article class="border rounded p-4">Post card</article>
+    </div>
+  </div>
+
+  <aside class="space-y-6">
+    <div class="border rounded p-4">
+      <h4 class="font-medium">Assine a newsletter</h4>
+      <form class="mt-3 flex gap-2" method="post" action="/newsletter/assinar/">
+        {% csrf_token %}
+        <input class="flex-1 border rounded px-3 py-2" placeholder="Seu e-mail" name="email" />
+        <button class="px-3 py-2 bg-zinc-900 text-white rounded">Assinar</button>
+      </form>
+    </div>
+    <div class="border rounded p-4">
+      <h4 class="font-medium">Recomendações</h4>
+      <ul class="mt-2 text-sm text-zinc-700 space-y-1">
+        <li>Publicação A</li>
+        <li>Publicação B</li>
+      </ul>
+    </div>
+  </aside>
+</section>
+
+<section class="mt-12">
+  <h2 class="text-xl font-semibold mb-4">Produtos</h2>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="border rounded p-4 flex flex-col">
+      <div class="h-36 bg-zinc-50 border rounded mb-3"></div>
+      <h3 class="font-medium">Curso X</h3>
+      <p class="text-sm text-zinc-600">Descrição breve do benefício.</p>
+      <div class="mt-auto flex items-center justify-between">
+        <span class="font-semibold">R$ 297</span>
+        <button class="px-3 py-1.5 bg-zinc-900 text-white rounded">Comprar</button>
+      </div>
+    </div>
+    <!-- Repita os cards conforme necessário -->
+  </div>
+</section>
+{% endblock %}
