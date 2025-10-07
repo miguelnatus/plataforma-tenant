@@ -24,6 +24,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 SHARED_APPS = [
+    'jazzmin',
     'django_tenants',
     'app',
     # 'client_app',
@@ -36,7 +37,7 @@ SHARED_APPS = [
 ]
 
 
-TENANT_APPS = ['client_app']
+TENANT_APPS = ['jazzmin','client_app']
 
 INSTALLED_APPS = SHARED_APPS + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
@@ -127,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'       
+TIME_ZONE = 'America/Sao_Paulo'    
 
 USE_I18N = True 
 
@@ -149,3 +150,55 @@ TENANT_MODEL = "app.Client"
 TENANT_DOMAIN_MODEL = "app.Domain"
 
 PUBLIC_SCHEMA_URLCONF = 'app.urls'
+
+
+JAZZMIN_SETTINGS = {
+    'site_title': 'Solvere ERP',
+    "site_logo": "images/logo_solvere.png",
+    'site_header': 'Solvere ERP',
+    'site_brand': 'Solvere ERP',
+    'icons': {
+        'auth': 'fas fa-users-cog',
+        'auth.user': 'fas fa-user',
+        'auth.Group': 'fas fa-users',
+        'products.Brand': 'fas fa-copyright',
+        'products.Category': 'fas fa-object-group',
+        'products.Product': 'fas fa-box',
+    },
+    'welcome_sign': 'Bem-vindo(a) ao Solvere ERP',
+    'copyright': 'Miguel Dev Sounds',
+    'search_model': ['products.Product'],
+    'show_ui_builder': True,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    'navbar_small_text': False,
+    'footer_small_text': False,
+    'body_small_text': False,
+    'brand_small_text': False,
+    'brand_colour': False,
+    'accent': 'accent-primary',
+    'navbar': 'navbar-white navbar-light',
+    'no_navbar_border': False,
+    'navbar_fixed': False,
+    'layout_boxed': False,
+    'footer_fixed': False,
+    'sidebar_fixed': False,
+    'sidebar': 'sidebar-dark-primary',
+    'sidebar_nav_small_text': False,
+    'sidebar_disable_expand': False,
+    'sidebar_nav_child_indent': False,
+    'sidebar_nav_compact_style': False,
+    'sidebar_nav_legacy_style': False,
+    'sidebar_nav_flat_style': False,
+    'theme': 'minty',
+    'dark_mode_theme': None,
+    'button_classes': {
+        'primary': 'btn-outline-primary',
+        'secondary': 'btn-outline-secondary',
+        'info': 'btn-info',
+        'warning': 'btn-warning',
+        'danger': 'btn-danger',
+        'success': 'btn-success'
+    }
+}

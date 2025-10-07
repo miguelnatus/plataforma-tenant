@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+{% block branding %}
+  <div class="navbar-brand">
+    {% if tenant_logo_url %}
+      <img src="{{ tenant_logo_url }}" alt="{{ tenant_name|default:'Admin' }}" style="height:32px;object-fit:contain;">
+    {% else %}
+      {{ tenant_name|default:"Solvere ERP" }}
+    {% endif %}
+  </div>
+{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  {% if tenant_brand_color %}
+    <style>:root{ --jazzmin-primary: {{ tenant_brand_color }}; }</style>
+  {% endif %}
+{% endblock %}
