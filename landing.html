@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Plataforma de Impacto Político</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F2E9;
+            color: #0D2B4F;
+        }
+        h1, h2, h3, h4, .font-serif {
+            font-family: 'Merriweather', serif;
+        }
+        .hero-bg {
+            background-color: #0D2B4F;
+        }
+        .btn-accent {
+            background-color: #E87A4F;
+            color: #ffffff;
+            transition: background-color 0.3s ease;
+        }
+        .btn-accent:hover {
+            background-color: #d96d41;
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .section-accent {
+            background-color: #E87A4F;
+            color: #FFF;
+        }
+    </style>
+</head>
+<body>
+    <!-- Chosen Palette: Political Heritage -->
+    <!-- Application Structure Plan: A single-page, top-down narrative structure designed to persuade political leaders. It starts with a strong value proposition in the hero section, followed by tangible examples of content (featured and grid posts). It then logically explains the core benefits of the platform, captures leads with a newsletter form, and concludes with a powerful, decisive call-to-action. This linear flow guides the user from awareness to conversion effectively, mirroring a persuasive political speech. -->
+    <!-- Visualization & Content Choices: Content is organized into thematic sections using a card-based UI (HTML/Tailwind) for clarity and scannability. Goal: Inform and Persuade. Method: The primary "visualizations" are the content cards themselves, representing articles and videos. Key benefits are highlighted using Unicode icons and text blocks, avoiding complex graphics for a clean, authoritative look. Interaction: Simple hover effects for visual feedback and clear CTAs to guide user actions. Justification: This approach is direct, professional, and focuses entirely on the strength of the copy, which is ideal for a target audience that values clear and powerful messaging. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold font-serif text-[#0D2B4F]">Sua Plataforma</h1>
+            <div>
+                <a href="#contato" class="btn-accent font-bold py-2 px-5 rounded-lg text-sm">Agende uma Demonstração</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-bg text-white py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold font-serif leading-tight">Amplifique sua Voz, Domine o Debate.</h1>
+                <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-200">A plataforma de conteúdo que transforma sua mensagem em impacto real. Centralize seus artigos, vídeos e comunicados em um espaço profissional, exclusivo e livre das distrações das redes sociais.</p>
+                <a href="#conteudo" class="mt-8 inline-block btn-accent font-bold text-lg py-4 px-10 rounded-lg">Veja como funciona</a>
+            </div>
+        </section>
+
+        <section id="conteudo" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold font-serif">Apresente suas ideias com a força que elas merecem.</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-[#3E5A7B]">Sua comunicação não pode depender apenas de posts que se perdem em segundos. Em sua plataforma, você controla a narrativa.</p>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row gap-8 items-center card-hover">
+                    <img src="https://placehold.co/600x400/0D2B4F/F7F2E9?text=Post+em+Destaque" alt="Imagem do post em destaque" class="w-full md:w-1/2 h-auto object-cover rounded-xl">
+                    <div class="md:w-1/2">
+                        <span class="text-sm font-bold text-[#E87A4F]">PROJETO DE LEI</span>
+                        <h3 class="text-3xl font-bold font-serif mt-2">Educação e Tecnologia: Proposta para o Futuro das Escolas Públicas</h3>
+                        <p class="mt-4 text-base text-[#3E5A7B]">Análise detalhada sobre o projeto de lei 123/2025, que visa modernizar a infraestrutura tecnológica das escolas, capacitar professores e garantir o acesso digital para todos os alunos da rede pública de ensino. Veja os principais pontos, os benefícios esperados e os próximos passos da tramitação.</p>
+                        <a href="#" class="mt-6 inline-block btn-accent font-bold py-3 px-6 rounded-lg">Leia a análise completa</a>
+                    </div>
+                </div>
+
+                <div class="mt-16">
+                    <h3 class="text-3xl font-bold font-serif text-center mb-10">Todo o seu conteúdo, em um só lugar.</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <img src="https://placehold.co/400x250/3E5A7B/FFFFFF?text=Vídeo" alt="Thumbnail de vídeo" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <span class="text-sm font-bold text-[#E87A4F]">VÍDEO</span>
+                                <h4 class="text-xl font-bold font-serif mt-2">Balanço do Semestre: Resultados e Conquistas</h4>
+                                <p class="mt-2 text-sm text-[#3E5A7B]">Um resumo em vídeo das principais atividades, projetos aprovados e verbas destinadas ao nosso município.</p>
+                                <a href="#" class="mt-4 inline-block font-bold text-[#E87A4F] hover:underline">Assista agora &rarr;</a>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <img src="https://placehold.co/400x250/3E5A7B/FFFFFF?text=Artigo" alt="Imagem de artigo" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <span class="text-sm font-bold text-[#E87A4F]">ARTIGO</span>
+                                <h4 class="text-xl font-bold font-serif mt-2">A Importância da Reforma Tributária para Pequenas Empresas</h4>
+                                <p class="mt-2 text-sm text-[#3E5A7B]">Como a simplificação de impostos pode impulsionar a economia local e gerar mais empregos.</p>
+                                <a href="#" class="mt-4 inline-block font-bold text-[#E87A4F] hover:underline">Leia o artigo &rarr;</a>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <img src="https://placehold.co/400x250/3E5A7B/FFFFFF?text=Comunicado" alt="Imagem de comunicado" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <span class="text-sm font-bold text-[#E87A4F]">COMUNICADO</span>
+                                <h4 class="text-xl font-bold font-serif mt-2">Agenda Oficial da Semana e Audiências Públicas</h4>
+                                <p class="mt-2 text-sm text-[#3E5A7B]">Confira os compromissos e participe das discussões importantes para a nossa comunidade.</p>
+                                <a href="#" class="mt-4 inline-block font-bold text-[#E87A4F] hover:underline">Veja a agenda &rarr;</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold font-serif">Uma Plataforma Completa para sua Estratégia Digital</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-[#3E5A7B]">Chega de ser refém de algoritmos. Tenha um espaço próprio, transmitindo autoridade, seriedade e controle total sobre a sua comunicação.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+                    <div class="p-6">
+                        <span class="text-5xl">✒️</span>
+                        <h4 class="text-2xl font-bold font-serif mt-4">Design de Impacto</h4>
+                        <p class="mt-2 text-[#3E5A7B]">Transmita autoridade e confiança com um layout moderno e focado na sua mensagem. Uma experiência de navegação limpa, que valoriza suas ideias.</p>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-5xl">📊</span>
+                        <h4 class="text-2xl font-bold font-serif mt-4">Controle Total</h4>
+                        <p class="mt-2 text-[#3E5A7B]">Você decide o que destacar. Organize seu conteúdo da forma mais estratégica para seus objetivos, sem as limitações de um feed cronológico.</p>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-5xl">🔗</span>
+                        <h4 class="text-2xl font-bold font-serif mt-4">Independência Digital</h4>
+                        <p class="mt-2 text-[#3E5A7B]">Construa um ativo digital que é seu. Crie sua lista de contatos, fale diretamente com sua base e não perca o alcance do dia para a noite.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-accent py-16 md:py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold font-serif">Fale Direto com a sua Base</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-lg">Construa sua lista de e-mails e envie suas atualizações mais importantes sem intermediários. O canal de comunicação mais poderoso para quem busca engajamento real.</p>
+                <form class="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
+                    <input type="email" placeholder="Digite seu melhor e-mail" class="w-full px-5 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-white" required>
+                    <button type="submit" class="bg-[#0D2B4F] text-white font-bold py-3 px-8 rounded-lg hover:bg-[#1a4a8a] transition-colors">Receber Atualizações</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="contato" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold font-serif">Pronto para Elevar sua Comunicação a um Novo Patamar?</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-[#3E5A7B]">Sua mensagem é importante demais para se perder no ruído digital. Tenha uma plataforma à altura da sua liderança e construa um legado sólido e duradouro.</p>
+                <a href="#" class="mt-8 inline-block btn-accent font-bold text-xl py-4 px-12 rounded-lg">Crie sua Plataforma de Impacto Agora</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="container mx-auto px-6 text-center text-[#3E5A7B]">
+            <p>&copy; 2025 Sua Plataforma. Todos os direitos reservados.</p>
+            <div class="mt-4 flex justify-center gap-6">
+                <a href="#" class="hover:underline">Sobre</a>
+                <a href="#" class="hover:underline">Políticas</a>
+                <a href="#" class="hover:underline">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

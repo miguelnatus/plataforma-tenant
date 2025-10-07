@@ -9,6 +9,8 @@ C:\Windows\System32\drivers\etc\hosts
 127.0.0.1   loja1.plataforma.local
 127.0.0.1   loja2.plataforma.local
 
+sudo nano /etc/hosts
+
 Get-ChildItem -Recurse -Include __pycache__ | Remove-Item -Recurse -Force
 pip freeze > requirements.txt
 
@@ -50,3 +52,7 @@ Domain.objects.create(domain="annasebba.com.br", tenant=tenant, is_primary=True)
 >>> tenant.save()
 >>> domain = Domain(domain="localhost", tenant=tenant, is_primary=True)
 >>> domain.save()
+
+python3 manage.py create_tenant --schema annasebba --name "plataforma" --domain-domain annasebba.com.br --no-input
+
+docker start -a plataforma_user

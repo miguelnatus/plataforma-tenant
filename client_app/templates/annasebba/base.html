@@ -5,14 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}{{ request.tenant.name }} – Conteúdo + Produtos{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    {% block head_extra %}{% endblock %}
+    {% block head_extra %}
+    <!-- Fonts e estilos do tema "Mandato em Ação" -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      body { font-family: 'Inter', sans-serif; background-color: #F7F2E9; color: #0D2B4F; }
+      h1, h2, h3, h4, .font-serif { font-family: 'Merriweather', serif; }
+      .hero-bg { background-color: #0D2B4F; }
+      .btn-accent { background-color: #E87A4F; color: #ffffff; transition: background-color 0.3s ease; }
+      .btn-accent:hover { background-color: #d96d41; }
+      .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+      .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+      .section-accent { background-color: #E87A4F; color: #FFF; }
+    </style>
+    {% endblock %}
   </head>
   <body class="bg-white text-zinc-900">
     <!-- Header -->
-    <header class="border-b">
+    <header class="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div class="flex items-center gap-6">
-          <a href="/" class="font-semibold">{{ request.tenant.name|default:"Hybrid" }}</a>
+          {% comment %} <a href="/" class="font-semibold">{{ request.tenant.name|default:"Hybrid" }}</a> {% endcomment %}
+          <a href="/" class="flex items-center gap-3 font-semibold" aria-label="{{ request.tenant.name|default:'Hybrid' }}">
+            {% if settings and settings.logo %}
+                <img src="{{ settings.logo.url }}" alt="{{ request.tenant.name|default:'Hybrid' }}" class="h-8 w-auto object-contain">
+            {% else %}
+                {{ request.tenant.name|default:"Hybrid" }}
+            {% endif %}
+          </a>
           <nav class="hidden md:flex gap-4">
             <a class="hover:text-zinc-600" href="/descobrir">Descobrir</a>
             <a class="hover:text-zinc-600" href="/loja">Loja</a>
@@ -34,9 +56,9 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t">
-      <div class="max-w-7xl mx-auto px-4 py-8 text-sm text-zinc-600">
-        <nav class="flex gap-4">
+    <footer class="bg-white border-t border-gray-200 py-8">
+      <div class="max-w-7xl mx-auto px-4 text-center text-[#3E5A7B]">
+        <nav class="flex gap-4 justify-center mb-2">
           <a href="/sobre">Sobre</a>
           <a href="/ajuda">Ajuda</a>
           <a href="/blog">Blog</a>
@@ -44,9 +66,19 @@
           <a href="/politicas">Políticas</a>
         </nav>
         <p class="mt-2">© {{ current_time|date:"Y" }} {{ request.tenant.name|default:"Hybrid" }}</p>
+        <div class="mt-4 flex justify-center gap-6">
+          <a href="#" class="hover:underline">Facebook</a>
+          <a href="#" class="hover:underline">Instagram</a>
+          <a href="#" class="hover:underline">YouTube</a>
+        </div>
       </div>
     </footer>
 
-    {% block body_extra %}{% endblock %}
+    {% block body_extra %}
+    <!-- CTA flutuante opcional -->
+    <div class="fixed top-3 right-4 z-40">
+      <a href="#newsletter" class="btn-accent font-bold py-2 px-4 rounded-lg text-sm shadow-sm">Fale Comigo</a>
+    </div>
+    {% endblock %}
   </body>
 </html>
