@@ -15,6 +15,7 @@ class Post(models.Model):
     DRAFT = "draft"
     PUBLISHED = "published"
     STATUS_CHOICES = [(DRAFT, "Rascunho"), (PUBLISHED, "Publicado")]
+    destaque = models.BooleanField(default=False)
 
     title = models.CharField(max_length=360)
     slug = models.SlugField(max_length=180, unique=True, db_index=True)
