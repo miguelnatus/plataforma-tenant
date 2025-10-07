@@ -19,6 +19,8 @@ pip install "psycopg2-binary>=2.9.9"
 
 django-admin startproject project .
 
+pip freeze > requirements.txt
+
 python manage.py startapp sites
 
 docker compose up -d
