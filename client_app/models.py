@@ -16,9 +16,9 @@ class Post(models.Model):
     PUBLISHED = "published"
     STATUS_CHOICES = [(DRAFT, "Rascunho"), (PUBLISHED, "Publicado")]
 
-    title = models.CharField(max_length=160)
+    title = models.CharField(max_length=360)
     slug = models.SlugField(max_length=180, unique=True, db_index=True)
-    summary = models.CharField(max_length=240, blank=True)
+    summary = models.CharField(max_length=540, blank=True)
     content = models.TextField()
     cover_image = models.ImageField(upload_to="posts/", null=True, blank=True)
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=DRAFT)
