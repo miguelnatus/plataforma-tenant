@@ -2,203 +2,159 @@ import os
 from pathlib import Path
 import environ
 
+# Base
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# .env
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Segurança e debug
+SECRET_KEY = env("SECRET_KEY", default="dev-only")
+DEBUG = env.bool("DEBUG", default=True)
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#er6qr7yhiq4x60w(xpk3i-5q$xsj4a-_m+6dfic9&yqnm^8@q'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-
-
-# Application definition
-
+# Apps
 SHARED_APPS = [
-    'jazzmin',
-    'django_tenants',
-    'app',
-    # 'client_app',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "jazzmin",                  # Jazzmin antes do admin
+    "django_tenants",           # Multi-tenant
+    "app",                      # App público/compartilhado
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 ]
 
+TENANT_APPS = [
+    "jazzmin",                  # UI do admin disponível nos schemas
+    "client_app",               # App específico de inquilinos
+]
 
-TENANT_APPS = ['jazzmin','client_app']
-
-INSTALLED_APPS = SHARED_APPS + [app for app in TENANT_APPS if app not in SHARED_APPS]
+INSTALLED_APPS = SHARED_APPS + [a for a in TENANT_APPS if a not in SHARED_APPS]
 
 MIDDLEWARE = [
-    'django_tenants.middleware.TenantMiddleware',  # deve ser o primeiro
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_tenants.middleware.TenantMiddleware",  # primeiro
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'project.urls'
+ROOT_URLCONF = "project.urls"
+PUBLIC_SCHEMA_URLCONF = "app.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],  # pode adicionar BASE_DIR / "templates" se usar diretório global
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.media",   # expõe MEDIA_URL
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'project.wsgi.application'
+WSGI_APPLICATION = "project.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django_tenants.postgresql_backend',  # Add 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#         'NAME': os.environ.get('DATABASE_DB', 'plataforma_user'),
-#         'USER': os.environ.get('DATABASE_USER', 'postgres'),
-#         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'Ozoutros@123'),
-#         'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
-#         'PORT': os.environ.get('DATABASE_PORT', '5432'),
-#     }
-# }
-
+# Banco (um database, múltiplos schemas)
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("DATABASE_ENGINE", "django_tenants.postgresql_backend"),
-        "NAME": os.getenv("DATABASE_DB", "plataforma_user"),
-        "USER": os.getenv("DATABASE_USER", "postgres"),
-        "PASSWORD": os.getenv("DATABASE_PASSWORD", ""),
-        "HOST": os.getenv("DATABASE_HOST", "127.0.0.1"),
-        "PORT": os.getenv("DATABASE_PORT", "5432"),
-        "CONN_MAX_AGE": int(os.getenv("CONN_MAX_AGE", "300")),
-        "OPTIONS": {"sslmode": os.getenv("DB_SSLMODE", "disable")},
+        "ENGINE": env("DATABASE_ENGINE", default="django_tenants.postgresql_backend"),
+        "NAME": env("DATABASE_DB", default="plataforma_user"),
+        "USER": env("DATABASE_USER", default="postgres"),
+        "PASSWORD": env("DATABASE_PASSWORD", default=""),
+        "HOST": env("DATABASE_HOST", default="127.0.0.1"),
+        "PORT": env("DATABASE_PORT", default="5432"),
+        "CONN_MAX_AGE": env.int("CONN_MAX_AGE", default=300),
+        "OPTIONS": {"sslmode": env("DB_SSLMODE", default="disable")},
     }
 }
+DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
-DATABASE_ROUTERS = (
-    'django_tenants.routers.TenantSyncRouter',
-)
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = 'pt-br'
-
-TIME_ZONE = 'America/Sao_Paulo'    
-
-USE_I18N = True 
-
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-TENANT_MODEL = "app.Client" 
-
+# Modelos de tenant
+TENANT_MODEL = "app.Client"
 TENANT_DOMAIN_MODEL = "app.Domain"
 
-PUBLIC_SCHEMA_URLCONF = 'app.urls'
+# Internacionalização
+LANGUAGE_CODE = "pt-br"
+TIME_ZONE = "America/Sao_Paulo"
+USE_I18N = True
+USE_TZ = True
 
+# Arquivos estáticos e mídia
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = []  # adicione pastas locais se houver
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Senhas
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Jazzmin (defaults globais; branding por tenant via templates/contexto)
 JAZZMIN_SETTINGS = {
-    'site_title': 'Solvere ERP',
-    "site_logo": "images/logo_solvere.png",
-    'site_header': 'Solvere ERP',
-    'site_brand': 'Solvere ERP',
-    'icons': {
-        'auth': 'fas fa-users-cog',
-        'auth.user': 'fas fa-user',
-        'auth.Group': 'fas fa-users',
-        'products.Brand': 'fas fa-copyright',
-        'products.Category': 'fas fa-object-group',
-        'products.Product': 'fas fa-box',
+    "site_title": "Solvere ERP",
+    "site_header": "Solvere ERP",
+    "site_brand": "Solvere ERP",
+    "site_logo": None,  # logo do tenant via template (tenant_logo_url)
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "products.Brand": "fas fa-copyright",
+        "products.Category": "fas fa-object-group",
+        "products.Product": "fas fa-box",
     },
-    'welcome_sign': 'Bem-vindo(a) ao Solvere ERP',
-    'copyright': 'Miguel Dev Sounds',
-    'search_model': ['products.Product'],
-    'show_ui_builder': True,
+    "welcome_sign": "Bem-vindo(a) ao Solvere ERP",
+    "show_ui_builder": True,
 }
 
 JAZZMIN_UI_TWEAKS = {
-    'navbar_small_text': False,
-    'footer_small_text': False,
-    'body_small_text': False,
-    'brand_small_text': False,
-    'brand_colour': False,
-    'accent': 'accent-primary',
-    'navbar': 'navbar-white navbar-light',
-    'no_navbar_border': False,
-    'navbar_fixed': False,
-    'layout_boxed': False,
-    'footer_fixed': False,
-    'sidebar_fixed': False,
-    'sidebar': 'sidebar-dark-primary',
-    'sidebar_nav_small_text': False,
-    'sidebar_disable_expand': False,
-    'sidebar_nav_child_indent': False,
-    'sidebar_nav_compact_style': False,
-    'sidebar_nav_legacy_style': False,
-    'sidebar_nav_flat_style': False,
-    'theme': 'minty',
-    'dark_mode_theme': None,
-    'button_classes': {
-        'primary': 'btn-outline-primary',
-        'secondary': 'btn-outline-secondary',
-        'info': 'btn-info',
-        'warning': 'btn-warning',
-        'danger': 'btn-danger',
-        'success': 'btn-success'
-    }
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": False,
+    "accent": "accent-primary",
+    "navbar": "navbar-white navbar-light",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": False,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "minty",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
 }
