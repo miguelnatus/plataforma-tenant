@@ -36,35 +36,33 @@
 
 <section id="conteudo" class="py-16 md:py-24">
   <div class="max-w-7xl mx-auto px-4">
-    <div class="text-center mb-12">
-      <h2 class="text-4xl font-bold font-serif">Mandato em Ação</h2>
-      <p class="mt-4 max-w-2xl mx-auto text-lg text-[#3E5A7B]">
-        Aqui você encontra as últimas notícias, projetos e debates do nosso mandato.
-      </p>
-    </div>
-    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row gap-8 items-center card-hover">
-        <img
-            src="{% if post and post.cover_image %}{{ post.cover_image.url }}{% else %}https://placehold.co/600x400/0D2B4F/F7F2E9?text=Post+em+Destaque{% endif %}"
-            alt="{% if post %}{{ post.title }}{% else %}Imagem do post em destaque{% endif %}"
-            class="w-full md:w-1/2 h-auto object-cover rounded-xl"
-        >
-        <div class="md:w-1/2">
-            <span class="text-sm font-bold text-[#E87A4F]">Destaque</span>
-            <h3 class="text-3xl font-bold font-serif mt-2">
-            {% if post %}{{ post.title }}{% else %}Sem post em destaque{% endif %}
-            </h3>
-            <p class="mt-4 text-base text-[#3E5A7B]">
-            {% if post and post.summary %}{{ post.summary }}{% elif post %}{{ post.content|truncatechars:180 }}{% else %}Publique um conteúdo marcado como destaque para ocupar este espaço.{% endif %}
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold font-serif">Mandato em Ação</h2>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-[#3E5A7B]">
+                Aqui você encontra as últimas notícias, projetos e debates do nosso mandato.
             </p>
-            {% if post %}
-            {% comment %} {% url 'post_detail' slug=post.slug %} {% endcomment %}
-            <a href="" class="mt-6 inline-block btn-accent font-bold py-3 px-6 rounded-lg">
-                Leia o post completo
-            {% else %}
-            <a href="/publicar" class="mt-6 inline-block btn-accent font-bold py-3 px-6 rounded-lg">
-                Criar publicação
-            </a>
-            {% endif %}
+        </div>
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row gap-8 items-center card-hover">
+            <img
+                src="{% if post and post.cover_image %}{{ post.cover_image.url }}{% else %}https://placehold.co/600x400/0D2B4F/F7F2E9?text=Post+em+Destaque{% endif %}"
+                alt="{% if post %}{{ post.title }}{% else %}Imagem do post em destaque{% endif %}"
+                class="w-full md:w-1/2 h-auto object-cover rounded-xl"
+            >
+            <div class="md:w-1/2">
+                <span class="text-sm font-bold text-[#E87A4F]">Destaque</span>
+                <h3 class="text-3xl font-bold font-serif mt-2">
+                {% if post %}{{ post.title }}{% else %}Sem post em destaque{% endif %}
+                </h3>
+                <p class="mt-4 text-base text-[#3E5A7B]">
+                {% if post and post.summary %}{{ post.summary }}{% elif post %}{{ post.content|truncatechars:180 }}{% else %}Publique um conteúdo marcado como destaque para ocupar este espaço.{% endif %}
+                </p>
+                {% if post %}
+                
+                <a href="" class="mt-6 inline-block btn-accent font-bold py-3 px-6 rounded-lg">
+                    Leia o post completo
+                </a>
+                {% endif %}
+            </div>
         </div>
     </div>
     {% comment %} <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row gap-8 items-center card-hover">
@@ -82,8 +80,8 @@
         <a href="#" class="mt-6 inline-block btn-accent font-bold py-3 px-6 rounded-lg">
           Leia a matéria completa
         </a>
-      </div> {% endcomment %}
-    </div>
+      </div>
+    </div> {% endcomment %}
 
     <div class="mt-16">
       <h3 class="text-3xl font-bold font-serif text-center mb-10">Outras Notícias</h3>

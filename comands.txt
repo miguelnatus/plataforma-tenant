@@ -13,6 +13,7 @@ sudo nano /etc/hosts
 
 Get-ChildItem -Recurse -Include __pycache__ | Remove-Item -Recurse -Force
 pip freeze > requirements.txt
+pip install -r requirements.txt
 
 python -m pip install --upgrade pip setuptools wheel
 pip install "psycopg2-binary>=2.9.9"
@@ -58,3 +59,15 @@ Domain.objects.create(domain="annasebba.com.br", tenant=tenant, is_primary=True)
 python3 manage.py create_tenant --schema annasebba --name "plataforma" --domain-domain annasebba.com.br --no-input
 
 docker start -a plataforma_user
+
+
+sudo -u postgres psql <<'SQL'
+CREATE ROLE postgres WITH LOGIN PASSWORD 'Ozoutros@3541';
+CREATE DATABASE plataforma_user OWNER postgres TEMPLATE template0 ENCODING 'UTF8' LC_COLLATE 'C' LC_CTYPE 'C';
+GRANT ALL PRIVILEGES ON DATABASE plataforma_user TO postgres;
+SQL
+
+sudo -u postgres psql <<'SQL'
+CREATE DATABASE plataforma_user OWNER postgres TEMPLATE template0 ENCODING 'UTF8' LC_COLLATE 'C' LC_CTYPE 'C';
+GRANT ALL PRIVILEGES ON DATABASE plataforma_user TO postgres;
+SQL

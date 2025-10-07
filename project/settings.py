@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
+import environ
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -70,14 +74,27 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django_tenants.postgresql_backend',  # Add 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#         'NAME': os.environ.get('DATABASE_DB', 'plataforma_user'),
+#         'USER': os.environ.get('DATABASE_USER', 'postgres'),
+#         'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'Ozoutros@123'),
+#         'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
+#         'PORT': os.environ.get('DATABASE_PORT', '5432'),
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django_tenants.postgresql_backend',  # Add 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.environ.get('DATABASE_DB', 'plataforma_user'),
-        'USER': os.environ.get('DATABASE_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'Ozoutros@123'),
-        'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('DATABASE_PORT', '5432'),
+    "default": {
+        "ENGINE": os.getenv("DATABASE_ENGINE", "django_tenants.postgresql_backend"),
+        "NAME": os.getenv("DATABASE_DB", "plataforma_user"),
+        "USER": os.getenv("DATABASE_USER", "postgres"),
+        "PASSWORD": os.getenv("DATABASE_PASSWORD", ""),
+        "HOST": os.getenv("DATABASE_HOST", "127.0.0.1"),
+        "PORT": os.getenv("DATABASE_PORT", "5432"),
+        "CONN_MAX_AGE": int(os.getenv("CONN_MAX_AGE", "300")),
+        "OPTIONS": {"sslmode": os.getenv("DB_SSLMODE", "disable")},
     }
 }
 
