@@ -1,22 +1,38 @@
-from .admin_site import tenant_admin_site
-from .models import SiteSettings, Post
 from django.contrib import admin
+from django.utils.html import format_html
+from django.db import models
+from django.contrib.admin.widgets import AdminFileWidget
+from .models import SiteSettings, NewsletterSubscriber
 
-@admin.register(SiteSettings, site=tenant_admin_site)
+class ImagePreviewWidget(AdminFileWidget):
+    def render(self, name, value, attrs=None, renderer=None):
+        out = []
+        try:
+            if hasattr(value, "url") and value:
+                out.append(f'<a href="{value.url}" target="_blank">'
+                           f'<img src="{value.url}" style="height:40px;object-fit:contain;border:1px solid #ddd;padding:2px;border-radius:4px"/></a>')
+        except Exception:
+            pass
+        out.append(super().render(name, value, attrs, renderer))
+        return format_html("".join(out))
+
+@admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ("site_name", "primary_color")
-    def has_add_permission(self, request):
-        return not SiteSettings.objects.exists()
-    def changelist_view(self, request, extra_context=None):
-        from django.shortcuts import redirect
-        obj = SiteSettings.objects.first()
-        if obj:
-            return redirect(f"./{obj.pk}/change/")
-        return super().changelist_view(request, extra_context=extra_context)
+    list_display = ("site_name", "primary_color", "favicon_preview", "logo_preview")
+    formfield_overrides = {
+        models.ImageField: {"widget": ImagePreviewWidget}
+    }
 
-@admin.register(Post, site=tenant_admin_site)
-class PostAdmin(admin.ModelAdmin):
-    list_display = ("title", "status", "published_at", "created_at")
-    list_filter = ("status", "published_at", "created_at")
-    search_fields = ("title", "summary", "content")
-    prepopulated_fields = {"slug": ("title",)}
+    def favicon_preview(self, obj):
+        return format_html(f'<img src="{obj.favicon.url}" style="height:24px;object-fit:contain"/>') if obj.favicon else "-"
+    favicon_preview.short_description = "favicon"
+
+    def logo_preview(self, obj):
+        return format_html(f'<img src="{obj.logo.url}" style="height:24px;object-fit:contain"/>') if obj.logo else "-"
+    logo_preview.short_description = "logo"
+
+@admin.register(NewsletterSubscriber)
+class NewsletterSubscriberAdmin(admin.ModelAdmin):
+    list_display = ("email", "confirmed", "created_at")
+    list_filter = ("confirmed", "created_at")
+    search_fields = ("email",)

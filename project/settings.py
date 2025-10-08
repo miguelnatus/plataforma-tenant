@@ -27,8 +27,7 @@ SHARED_APPS = [
     "django.contrib.staticfiles",
 ]
 
-TENANT_APPS = [
-    "jazzmin",                  # UI do admin disponível nos schemas
+TENANT_APPS = [              # UI do admin disponível nos schemas
     "client_app",               # App específico de inquilinos
 ]
 

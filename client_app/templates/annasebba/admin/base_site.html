@@ -1,16 +1,19 @@
 {% extends "admin/base_site.html" %}
+
 {% block branding %}
-  <div class="navbar-brand">
-    {% if tenant_logo_url %}
-      <img src="{{ tenant_logo_url }}" alt="{{ tenant_name|default:'Admin' }}" style="height:32px;object-fit:contain;">
-    {% else %}
-      {{ tenant_name|default:"Solvere ERP" }}
-    {% endif %}
-  </div>
+  {% if tenant_logo_url %}
+    <a class="brand-link" href="{% url 'admin:index' %}">
+      <img src="{{ tenant_logo_url }}" alt="{{ tenant_name|default:'Admin' }}" class="brand-image" style="max-height:32px;object-fit:contain;">
+      <span class="brand-text">{{ tenant_name|default:'Solvere ERP' }}</span>
+    </a>
+  {% else %}
+    {{ block.super }}
+  {% endif %}
 {% endblock %}
+
 {% block extrastyle %}
   {{ block.super }}
   {% if tenant_brand_color %}
-    <style>:root{ --jazzmin-primary: {{ tenant_brand_color }}; }</style>
+    <style>:root { --jazzmin-primary: {{ tenant_brand_color }}; }</style>
   {% endif %}
 {% endblock %}

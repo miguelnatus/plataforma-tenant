@@ -28,6 +28,8 @@ docker compose up -d
 
 docker run --name plataforma_user -e POSTGRES_PASSWORD=Ozoutros@123 -e POSTGRES_DB=plataforma_user -p 5432:5432 -d postgres:16
 
+docker run --name solvere_mysql -e MYSQL_ROOT_PASSWORD=Ozoutros@123 -e MYSQL_DATABASE=solvere_admin -p 3306:3306 -d mysql:8.0
+
 python manage.py makemigrations
 python manage.py migrate_schemas --shared
 python manage.py migrate_schemas --tenant

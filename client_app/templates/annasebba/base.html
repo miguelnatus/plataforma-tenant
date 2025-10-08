@@ -6,6 +6,12 @@
     <title>{% block title %}{{ request.tenant.name }} – Conteúdo + Produtos{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     {% block head_extra %}
+    {% if settings.favicon %}
+    {% comment %} <link rel="icon" href="{{ settings.favicon }}" type="image/png"> {% endcomment %}
+    <link rel="shortcut icon" href="{{ settings.favicon }}" type="image/x-icon">
+    <link rel="icon" href="{{ settings.favicon }}" type="image/x-icon">
+    
+    {% endif %}
     <!-- Fonts e estilos do tema "Mandato em Ação" -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

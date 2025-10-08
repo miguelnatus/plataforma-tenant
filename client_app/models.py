@@ -4,12 +4,26 @@ from django.utils.text import slugify
 class SiteSettings(models.Model):
     site_name = models.CharField(max_length=120)
     primary_color = models.CharField(max_length=7, default="#0ea5e9")
+    favicon = models.ImageField(upload_to="branding/", null=True, blank=True)
     logo = models.ImageField(upload_to="branding/", null=True, blank=True)
     seo_title = models.CharField(max_length=70, blank=True)
     seo_description = models.CharField(max_length=160, blank=True)
 
     def __str__(self):
         return self.site_name
+    
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True)
+    conf_num = models.CharField(max_length=32, blank=True)
+    confirmed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Opcional: se quiser isolar por tenant (um e-mail pode se inscrever em múltiplos tenants)
+    # tenant = models.ForeignKey("app.Client", null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        status = "ok" if self.confirmed else "pendente"
+        return f"{self.email} ({status})"
     
 class Post(models.Model):
     DRAFT = "draft"
