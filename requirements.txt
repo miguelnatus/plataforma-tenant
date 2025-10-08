@@ -8,3 +8,4 @@ sqlparse==0.5.3
 wheel==0.45.1
 django-environ==0.11.2 # Adicionado para gerenciamento de settings
 whitenoise==6.6.0 # Adicionado para servir arquivos estáticos
+django-ckeditor==6.7.1 

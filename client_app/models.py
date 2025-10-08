@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from ckeditor_uploader.fields import RichTextUploadingField
 
 class SiteSettings(models.Model):
     site_name = models.CharField(max_length=120)
@@ -34,7 +35,8 @@ class Post(models.Model):
     title = models.CharField(max_length=360)
     slug = models.SlugField(max_length=180, unique=True, db_index=True)
     summary = models.CharField(max_length=540, blank=True)
-    content = models.TextField()
+    # O campo de conteúdo agora usa o CKEditor com upload
+    content = RichTextUploadingField()
     cover_image = models.ImageField(upload_to="posts/", null=True, blank=True)
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=DRAFT)
     published_at = models.DateTimeField(null=True, blank=True)

@@ -38,6 +38,8 @@ SHARED_APPS = [
 
 TENANT_APPS = [              # UI do admin disponível nos schemas
     "client_app",               # App específico de inquilinos
+    "ckeditor",                 # Adicionado
+    "ckeditor_uploader",        # Adicionado
 ]
 
 INSTALLED_APPS = SHARED_APPS + [a for a in TENANT_APPS if a not in SHARED_APPS]
@@ -171,6 +173,15 @@ JAZZMIN_UI_TWEAKS = {
         "warning": "btn-warning",
         "danger": "btn-danger",
         "success": "btn-success",
+    },
+}
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
     },
 }
 
