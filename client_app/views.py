@@ -3,27 +3,30 @@ from django.views import View
 from django.utils.text import slugify
 from .models import SiteSettings, Post
 from django.views.generic.edit import FormView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 import secrets
 from .forms import NewsletterForm
 from .models import NewsletterSubscriber
+from django.template.loader import select_template
+from django.core.mail import send_mail
 
 class HomeTenantView(View):
-    template_name = "default/homeView.html"
-
     def get_template_for_tenant(self, request):
         tname = getattr(request.tenant, "schema_name", "default")
-        return f"{tname}/homeView.html"
+        # Usa select_template para criar um fallback seguro para o "default"
+        template = select_template([
+            f"{tname}/homeView.html",
+            "default/homeView.html"
+        ])
+        return template.template.name # Retorna o nome do template encontrado
 
     def get(self, request):
         settings_obj = SiteSettings.objects.first()
         
-        # for settings_obj in SiteSettings.objects.all():
-        #     print(settings_obj.favicon)
         post = (
-            Post.objects.filter(status=Post.PUBLISHED)
+            Post.objects.filter(status=Post.PUBLISHED, destaque=True) # Busca post em destaque
             .order_by("-published_at", "-created_at")
-            .only("id", "title", "slug", "summary", "published_at", "created_at")
+            .only("id", "title", "slug", "summary", "published_at", "created_at", "cover_image")
             .first()
         )
         context = {"settings": settings_obj, "post": post}
@@ -38,20 +41,33 @@ class NewsletterSubscribeView(FormView):
 
     def form_valid(self, form):
         email = form.cleaned_data["email"].lower().strip()
-        sub, _ = NewsletterSubscriber.objects.get_or_create(email=email)
+        sub, created = NewsletterSubscriber.objects.get_or_create(email=email)
+        
         if not sub.confirmed:
             sub.conf_num = secrets.token_urlsafe(12)
             sub.save()
-            # TODO: enviar e-mail com link:
-            # confirm_url = self.request.build_absolute_uri(
-            #   reverse("newsletter_confirm") + f"?email={email}&token={sub.conf_num}"
-            # )
-            # enviar_email(confirm_url)
+            
+            # Envio de e-mail de confirmação
+            confirm_url = self.request.build_absolute_uri(
+               reverse("newsletter_confirm") + f"?email={email}&token={sub.conf_num}"
+            )
+            
+            # Você deve criar templates de e-mail para subject e message
+            send_mail(
+                subject="Confirme sua inscrição",
+                message=f"Olá! Por favor, confirme sua inscrição clicando no link: {confirm_url}",
+                from_email=None,  # Usa DEFAULT_FROM_EMAIL de settings.py
+                recipient_list=[email],
+                fail_silently=False, # Mude para True em produção se preferir
+            )
+            
         return super().form_valid(form)
 
 class NewsletterSubscribeDoneView(View):
     def get(self, request):
-        return render(request, "newsletter/subscribe_done.html")
+        # Passa o email para a página de confirmação para exibição
+        email = request.GET.get('email', '')
+        return render(request, "newsletter/subscribe_done.html", {'email': email})
 
 class NewsletterConfirmView(View):
     def get(self, request):

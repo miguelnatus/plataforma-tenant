@@ -126,7 +126,7 @@
     <p class="mt-4 max-w-2xl mx-auto text-lg">
       Cadastre seu e-mail para receber em primeira mão as notícias do nosso mandato, agenda e convites para eventos.
     </p>
-    <form class="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-4" method="post" action="/newsletter/assinar/">
+    <form class="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-4" method="post" action="{% url 'newsletter_subscribe' %}">
       {% csrf_token %}
       <input type="email" name="email" placeholder="Digite seu melhor e-mail"
              class="w-full px-5 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-white" required>

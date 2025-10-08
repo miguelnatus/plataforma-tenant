@@ -6,13 +6,21 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .env
-env = environ.Env()
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Segurança e debug
-SECRET_KEY = env("SECRET_KEY", default="dev-only")
-DEBUG = env.bool("DEBUG", default=True)
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+# Lendo a SECRET_KEY do ambiente, sem valor padrão em produção
+SECRET_KEY = env("SECRET_KEY")
+# O padrão de DEBUG agora é False. Defina DEBUG=True no seu .env de desenvolvimento
+DEBUG = env('DEBUG')
+
+# Configure os hosts permitidos no .env, ex: ALLOWED_HOSTS=sub.dominio.com,localhost
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["plataforma.local", "127.0.0.1", "localhost"])
+
 
 # Apps
 SHARED_APPS = [
@@ -24,6 +32,7 @@ SHARED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic", # Whitenoise
     "django.contrib.staticfiles",
 ]
 
@@ -36,6 +45,7 @@ INSTALLED_APPS = SHARED_APPS + [a for a in TENANT_APPS if a not in SHARED_APPS]
 MIDDLEWARE = [
     "django_tenants.middleware.TenantMiddleware",  # primeiro
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware", # Whitenoise
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -58,6 +68,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.media",   # expõe MEDIA_URL
+                "client_app.context_processors.tenant_branding", # Context Processor ativado
             ],
         },
     },
@@ -93,10 +104,15 @@ USE_TZ = True
 # Arquivos estáticos e mídia
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATICFILES_DIRS = []  # adicione pastas locais se houver
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+# Para produção, considere usar django-storages com um provedor como S3
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+# ... outras configs do S3
 
 # Senhas
 AUTH_PASSWORD_VALIDATORS = [
@@ -157,3 +173,14 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
 }
+
+# Configurações de Email (exemplo para console, troque em produção)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Para produção, use um serviço como SendGrid, AWS SES, etc.
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = env('EMAIL_HOST')
+# EMAIL_PORT = env.int('EMAIL_PORT', 587)
+# EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', True)
+# EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')

@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.db import models
 from django.contrib.admin.widgets import AdminFileWidget
-from .models import SiteSettings, NewsletterSubscriber
+from .models import SiteSettings, NewsletterSubscriber, Post
+from .admin_site import tenant_admin_site # Importa o admin site personalizado
 
 class ImagePreviewWidget(AdminFileWidget):
     def render(self, name, value, attrs=None, renderer=None):
@@ -16,7 +17,6 @@ class ImagePreviewWidget(AdminFileWidget):
         out.append(super().render(name, value, attrs, renderer))
         return format_html("".join(out))
 
-@admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
     list_display = ("site_name", "primary_color", "favicon_preview", "logo_preview")
     formfield_overrides = {
@@ -31,8 +31,18 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return format_html(f'<img src="{obj.logo.url}" style="height:24px;object-fit:contain"/>') if obj.logo else "-"
     logo_preview.short_description = "logo"
 
-@admin.register(NewsletterSubscriber)
 class NewsletterSubscriberAdmin(admin.ModelAdmin):
     list_display = ("email", "confirmed", "created_at")
     list_filter = ("confirmed", "created_at")
     search_fields = ("email",)
+
+class PostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'status', 'destaque', 'published_at', 'created_at')
+    list_filter = ('status', 'destaque', 'published_at')
+    search_fields = ('title', 'content')
+    prepopulated_fields = {'slug': ('title',)}
+
+# Registra os models no admin site do tenant
+tenant_admin_site.register(SiteSettings, SiteSettingsAdmin)
+tenant_admin_site.register(NewsletterSubscriber, NewsletterSubscriberAdmin)
+tenant_admin_site.register(Post, PostAdmin)
