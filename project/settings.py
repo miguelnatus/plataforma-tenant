@@ -7,47 +7,51 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .env
 env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
+    DEBUG=(bool, False),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Segurança e debug
-# Lendo a SECRET_KEY do ambiente, sem valor padrão em produção
-SECRET_KEY = env("SECRET_KEY")
-# O padrão de DEBUG agora é False. Defina DEBUG=True no seu .env de desenvolvimento
-DEBUG = env('DEBUG')
+SECRET_KEY = env("SECRET_KEY")  # defina no .env
+DEBUG = env("DEBUG")
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS",
+    default=["annasebba.com.br", "www.annasebba.com.br", "127.0.0.1", "localhost"],
+)
+# Proteções de CSRF (exigem esquema)
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=["https://annasebba.com.br", "https://www.annasebba.com.br"],
+)
 
-# Configure os hosts permitidos no .env, ex: ALLOWED_HOSTS=sub.dominio.com,localhost
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["plataforma.local", "127.0.0.1", "localhost"])
-
-
-# Apps
+# Apps (multi-tenant + admin com Jazzmin)
 SHARED_APPS = [
-    "jazzmin",                  # Jazzmin antes do admin
-    "django_tenants",           # Multi-tenant
-    "app",                      # App público/compartilhado
+    "jazzmin",                      # Jazzmin antes do admin
+    "django_tenants",               # Multi-tenant (schemas)
+    "app",                          # App público/compartilhado (TENANT_MODEL/TENANT_DOMAIN_MODEL)
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "whitenoise.runserver_nostatic", # Whitenoise
+    "whitenoise.runserver_nostatic",# WhiteNoise desabilita static do runserver
     "django.contrib.staticfiles",
 ]
 
-TENANT_APPS = [              # UI do admin disponível nos schemas
-    "client_app",               # App específico de inquilinos
-    "ckeditor",                 # Adicionado
-    "ckeditor_uploader",        # Adicionado
+TENANT_APPS = [
+    "client_app",                   # App específico dos tenants
+    "ckeditor",
+    "ckeditor_uploader",
 ]
 
 INSTALLED_APPS = SHARED_APPS + [a for a in TENANT_APPS if a not in SHARED_APPS]
 
+# Middleware
 MIDDLEWARE = [
-    "django_tenants.middleware.TenantMiddleware",  # primeiro
+    # Recomendado pelo projeto: main.TenantMainMiddleware no topo
+    "django_tenants.middleware.main.TenantMainMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware", # Whitenoise
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # servir estáticos em prod
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -57,20 +61,20 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "project.urls"
-PUBLIC_SCHEMA_URLCONF = "app.urls"
+PUBLIC_SCHEMA_URLCONF = "app.urls"  # URLs do schema público
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],  # pode adicionar BASE_DIR / "templates" se usar diretório global
+        "DIRS": [],  # ex.: [BASE_DIR / "templates"]
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django.template.context_processors.request",
+                "django.template.context_processors.request",   # necessário p/ tenants
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "django.template.context_processors.media",   # expõe MEDIA_URL
-                "client_app.context_processors.tenant_branding", # Context Processor ativado
+                "django.template.context_processors.media",
+                "client_app.context_processors.tenant_branding",
             ],
         },
     },
@@ -78,7 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "project.wsgi.application"
 
-# Banco (um database, múltiplos schemas)
+# Banco (PostgreSQL + django-tenants)
 DATABASES = {
     "default": {
         "ENGINE": env("DATABASE_ENGINE", default="django_tenants.postgresql_backend"),
@@ -93,7 +97,7 @@ DATABASES = {
 }
 DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
-# Modelos de tenant
+# Modelos de tenant (ajuste para o caminho real dos seus models)
 TENANT_MODEL = "app.Client"
 TENANT_DOMAIN_MODEL = "app.Domain"
 
@@ -107,14 +111,10 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATICFILES_DIRS = []  # adicione pastas locais se houver
+STATICFILES_DIRS = []  # ex.: [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
-# Para produção, considere usar django-storages com um provedor como S3
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-# ... outras configs do S3
 
 # Senhas
 AUTH_PASSWORD_VALIDATORS = [
@@ -126,12 +126,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Jazzmin (defaults globais; branding por tenant via templates/contexto)
+# Jazzmin
 JAZZMIN_SETTINGS = {
     "site_title": "Solvere ERP",
     "site_header": "Solvere ERP",
     "site_brand": "Solvere ERP",
-    "site_logo": None,  # logo do tenant via template (tenant_logo_url)
+    "site_logo": None,  # logo por tenant via template/context
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
@@ -143,7 +143,6 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Bem-vindo(a) ao Solvere ERP",
     "show_ui_builder": True,
 }
-
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
     "footer_small_text": False,
@@ -176,22 +175,12 @@ JAZZMIN_UI_TWEAKS = {
     },
 }
 
+# CKEditor
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'height': 300,
-        'width': '100%',
+    "default": {
+        "toolbar": "full",
+        "height": 300,
+        "width": "100%",
     },
 }
-
-# Configurações de Email (exemplo para console, troque em produção)
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# Para produção, use um serviço como SendGrid, AWS SES, etc.
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = env('EMAIL_HOST')
-# EMAIL_PORT = env.int('EMAIL_PORT', 587)
-# EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', True)
-# EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-# DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
