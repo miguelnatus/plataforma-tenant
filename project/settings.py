@@ -81,7 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "project.wsgi.application"
-
+SILENCED_SYSTEM_CHECKS = ['ckeditor.W001']
 # Banco (PostgreSQL + django-tenants)
 DATABASES = {
     "default": {
@@ -128,9 +128,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Jazzmin
 JAZZMIN_SETTINGS = {
-    "site_title": "Solvere ERP",
-    "site_header": "Solvere ERP",
-    "site_brand": "Solvere ERP",
+    "site_title": "Anna Sebba",
+    "site_header": "Anna Sebba",
+    "site_brand": "Anna Sebba",
     "site_logo": None,  # logo por tenant via template/context
     "icons": {
         "auth": "fas fa-users-cog",

@@ -2,14 +2,21 @@ from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
 
-class HomePublicView(View):
-    
+
+
+class HomePublicView(View):    
 
     template_name = 'homePublicView.html'
 
     def get(self, request):
-        
-        return render(request, self.template_name)
+        class HomePublicView(View):
+    def get(self, request):
+        context = {
+            'title': 'Solvere ERP - Sistema Multi-tenant',
+            'description': 'Plataforma de gestão empresarial',
+        }
+        return render(request, 'homePublicView.html', context)
+        #return render(request, self.template_name)
         # return render(request, 'painel.html', context)
 
 # def index(request):
