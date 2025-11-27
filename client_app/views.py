@@ -30,7 +30,7 @@ class HomeTenantView(View):
             .first()
         )
 
-        print(destaque)
+        print(settings_obj)
 
         outros_posts = (
             Post.objects.filter(status=Post.PUBLISHED, destaque=False)

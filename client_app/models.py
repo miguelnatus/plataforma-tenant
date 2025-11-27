@@ -10,6 +10,7 @@ class SiteSettings(models.Model):
     logo = models.ImageField(upload_to="branding/", null=True, blank=True)
     seo_title = models.CharField(max_length=70, blank=True)
     seo_description = models.CharField(max_length=160, blank=True)
+    profile = models.ImageField(upload_to="branding/", null=True, blank=True)
 
     def __str__(self):
         return self.site_name

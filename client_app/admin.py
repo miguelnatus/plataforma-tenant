@@ -18,7 +18,7 @@ class ImagePreviewWidget(AdminFileWidget):
         return format_html("".join(out))
 
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ("site_name", "primary_color", "favicon_preview", "logo_preview")
+    list_display = ("site_name" ,"primary_color", "favicon_preview", "logo_preview")
     formfield_overrides = {
         models.ImageField: {"widget": ImagePreviewWidget}
     }
