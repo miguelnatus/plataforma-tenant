@@ -58,65 +58,52 @@
                 </p>
                 {% if post %}
                 
-                <a href="" class="mt-6 inline-block btn-accent font-bold py-3 px-6 rounded-lg">
+               
+                <a href="{% url 'post_detail' pk=post.id slug=post.slug %}"  class="mt-6 inline-block btn-accent font-bold py-3 px-6 rounded-lg">
                     Leia o post completo
                 </a>
                 {% endif %}
             </div>
         </div>
     </div>
-    {% comment %} <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row gap-8 items-center card-hover">
-      <img src="https://placehold.co/600x400/0D2B4F/F7F2E9?text=Post+em+Destaque"
-           alt="Imagem do post em destaque"
-           class="w-full md:w-1/2 h-auto object-cover rounded-xl">
-      <div class="md:w-1/2">
-        <span class="text-sm font-bold text-[#E87A4F]">EDUCAÇÃO</span>
-        <h3 class="text-3xl font-bold font-serif mt-2">
-          Sancionada a Lei de Incentivo à Leitura nas Escolas
-        </h3>
-        <p class="mt-4 text-base text-[#3E5A7B]">
-          Uma grande vitória para nossos estudantes! Após meses de debate, conseguimos aprovar e sancionar a lei que cria bibliotecas comunitárias e amplia o acervo das escolas públicas. Um passo fundamental para o futuro das nossas crianças.
-        </p>
-        <a href="#" class="mt-6 inline-block btn-accent font-bold py-3 px-6 rounded-lg">
-          Leia a matéria completa
-        </a>
-      </div>
-    </div> {% endcomment %}
 
     <div class="mt-16">
-      <h3 class="text-3xl font-bold font-serif text-center mb-10">Outras Notícias</h3>
+      <h3 class="text-3xl font-bold font-serif text-center mb-10">Outros Posts</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
-          <img src="https://placehold.co/400x250/3E5A7B/FFFFFF?text=Sa%C3%BAde" alt="Thumbnail de vídeo" class="w-full h-48 object-cover">
-          <div class="p-6">
-            <span class="text-sm font-bold text-[#E87A4F]">SAÚDE</span>
-            <h4 class="text-xl font-bold font-serif mt-2">Visita ao Novo Posto de Saúde do Bairro Esperança</h4>
-            <p class="mt-2 text-sm text-[#3E5A7B]">Conferi de perto a conclusão das obras que trarão mais qualidade de vida para mais de 5 mil famílias.</p>
-            <a href="#" class="mt-4 inline-block font-bold text-[#E87A4F] hover:underline">Assista ao vídeo &rarr;</a>
-          </div>
-        </div>
 
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
-          <img src="https://placehold.co/400x250/3E5A7B/FFFFFF?text=Economia" alt="Imagem de artigo" class="w-full h-48 object-cover">
-          <div class="p-6">
-            <span class="text-sm font-bold text-[#E87A4F]">ECONOMIA</span>
-            <h4 class="text-xl font-bold font-serif mt-2">Artigo: Desburocratizar para Gerar Empregos</h4>
-            <p class="mt-2 text-sm text-[#3E5A7B]">Minha opinião sobre como podemos apoiar os pequenos empreendedores e aquecer a economia local.</p>
-            <a href="#" class="mt-4 inline-block font-bold text-[#E87A4F] hover:underline">Leia o artigo &rarr;</a>
-          </div>
-        </div>
+        {% for p in posts %}
+          <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+            {% if p.cover_image %}
+              <img src="{{ p.cover_image.url }}" alt="{{ p.title }}" class="w-full h-48 object-cover">
+            {% else %}
+              <img src="https://placehold.co/400x250/3E5A7B/FFFFFF?text=Notícia" alt="{{ p.title }}" class="w-full h-48 object-cover">
+            {% endif %}
+            <div class="p-6">
+              {# Se tiver categoria, troque aqui; senão tira essa linha ou use algo padrão #}
+              {# <span class="text-sm font-bold text-[#E87A4F]">{{ p.category.name }}</span> #}
+              <span class="text-sm font-bold text-[#E87A4F]">NOTÍCIA</span>
 
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
-          <img src="https://placehold.co/400x250/3E5A7B/FFFFFF?text=Seguran%C3%A7a" alt="Imagem de comunicado" class="w-full h-48 object-cover">
-          <div class="p-6">
-            <span class="text-sm font-bold text-[#E87A4F]">SEGURANÇA</span>
-            <h4 class="text-xl font-bold font-serif mt-2">Novas Viaturas para a Guarda Municipal</h4>
-            <p class="mt-2 text-sm text-[#3E5A7B]">Destinamos emenda parlamentar para reforçar o patrulhamento e a segurança em nossa cidade.</p>
-            <a href="#" class="mt-4 inline-block font-bold text-[#E87A4F] hover:underline">Saiba mais &rarr;</a>
+              <h4 class="text-xl font-bold font-serif mt-2">
+                <a href="{% url 'post_detail' pk=p.id slug=p.slug %}" class="hover:underline">
+                  {{ p.title }}
+                </a>
+              </h4>
+
+              <p class="mt-2 text-sm text-[#3E5A7B]">
+                {{ p.summary|default:p.title }}
+              </p>
+
+              <a href="{% url 'post_detail' pk=p.id slug=p.slug %}" class="mt-4 inline-block font-bold text-[#E87A4F] hover:underline">
+                Saiba mais &rarr;
+              </a>
+            </div>
           </div>
-        </div>
+        {% empty %}
+          <p class="text-center text-sm text-[#3E5A7B]">Nenhuma notícia encontrada.</p>
+        {% endfor %}
+
       </div>
-    </div>
+</div>
   </div>
 </section>
 

@@ -42,6 +42,7 @@ TENANT_APPS = [
     "client_app",                   # App específico dos tenants
     "ckeditor",
     "ckeditor_uploader",
+    "embed_video",
 ]
 
 INSTALLED_APPS = SHARED_APPS + [a for a in TENANT_APPS if a not in SHARED_APPS]
@@ -177,6 +178,7 @@ JAZZMIN_UI_TWEAKS = {
 
 # CKEditor
 CKEDITOR_UPLOAD_PATH = "uploads/"
+
 CKEDITOR_CONFIGS = {
     "default": {
         "toolbar": "full",
@@ -184,3 +186,4 @@ CKEDITOR_CONFIGS = {
         "width": "100%",
     },
 }
+CKEDITOR_CONFIGS['default']['extraAllowedContent'] = 'iframe[*]' 

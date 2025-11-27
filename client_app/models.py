@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from ckeditor_uploader.fields import RichTextUploadingField
+from embed_video.fields import EmbedVideoField
 
 class SiteSettings(models.Model):
     site_name = models.CharField(max_length=120)
@@ -35,9 +36,15 @@ class Post(models.Model):
     title = models.CharField(max_length=360)
     slug = models.SlugField(max_length=180, unique=True, db_index=True)
     summary = models.CharField(max_length=540, blank=True)
-    # O campo de conteúdo agora usa o CKEditor com upload
     content = RichTextUploadingField()
     cover_image = models.ImageField(upload_to="posts/", null=True, blank=True)
+    video = EmbedVideoField(blank=True, help_text="URL do vídeo (YouTube/Vimeo)")
+    # aqui muda:
+    # video = models.TextField(
+    #     blank=True,
+    #     help_text="Cole aqui o código completo do iframe do vídeo (YouTube/Vimeo)",
+    # )
+
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=DRAFT)
     published_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

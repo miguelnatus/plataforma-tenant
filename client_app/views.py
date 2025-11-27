@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.utils.text import slugify
 from .models import SiteSettings, Post
@@ -9,30 +9,73 @@ from .forms import NewsletterForm
 from .models import NewsletterSubscriber
 from django.template.loader import select_template
 from django.core.mail import send_mail
+from urllib.parse import urlparse, parse_qs
 
 class HomeTenantView(View):
     def get_template_for_tenant(self, request):
         tname = getattr(request.tenant, "schema_name", "default")
-        # Usa select_template para criar um fallback seguro para o "default"
         template = select_template([
             f"{tname}/homeView.html",
-            "default/homeView.html"
+            "default/homeView.html",
         ])
-        return template.template.name # Retorna o nome do template encontrado
+        return template.template.name
 
     def get(self, request):
         settings_obj = SiteSettings.objects.first()
-        
-        post = (
-            Post.objects.filter(status=Post.PUBLISHED, destaque=True) # Busca post em destaque
+
+        destaque = (
+            Post.objects.filter(status=Post.PUBLISHED, destaque=True)
             .order_by("-published_at", "-created_at")
-            .only("id", "title", "slug", "summary", "published_at", "created_at", "cover_image")
+            .only("id", "title", "slug", "summary", "published_at", "created_at", "cover_image", "video")
             .first()
         )
-        context = {"settings": settings_obj, "post": post}
+
+        print(destaque)
+
+        outros_posts = (
+            Post.objects.filter(status=Post.PUBLISHED, destaque=False)
+            .order_by("-published_at", "-created_at")
+            .only("id", "title", "slug", "summary", "published_at", "created_at", "cover_image", "video")[:6]
+        )
+
+        context = {
+            "settings": settings_obj,
+            "post": destaque,
+            "posts": outros_posts,
+        }
         tpl = self.get_template_for_tenant(request)
-        
         return render(request, tpl, context)
+    
+class PostDetailView(View):
+    def get(self, request, pk, slug):
+        post = get_object_or_404(Post, pk=pk, slug=slug, status=Post.PUBLISHED)
+        settings_obj = SiteSettings.objects.first()
+        tname = getattr(request.tenant, "schema_name", "default")
+
+        video_embed = None
+        if post.video:
+            url = str(post.video)
+            parsed = urlparse(url)
+
+            if "youtube.com" in parsed.netloc and parsed.path == "/watch":
+                qs = parse_qs(parsed.query)
+                vid = qs.get("v", [None])[0]
+                if vid:
+                    video_embed = f"https://www.youtube.com/embed/{vid}"
+            elif "youtu.be" in parsed.netloc:
+                vid = parsed.path.lstrip("/")
+                if vid:
+                    video_embed = f"https://www.youtube.com/embed/{vid}"
+            else:
+                video_embed = url
+        
+        print(video_embed)
+
+        return render(
+            request,
+            f"{tname}/post_detail.html",
+            {"post": post, "settings": settings_obj, "video_embed": video_embed},
+        )
 
 class NewsletterSubscribeView(FormView):
     form_class = NewsletterForm
