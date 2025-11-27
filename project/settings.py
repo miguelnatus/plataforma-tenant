@@ -141,7 +141,7 @@ JAZZMIN_SETTINGS = {
         "products.Category": "fas fa-object-group",
         "products.Product": "fas fa-box",
     },
-    "welcome_sign": "Bem-vindo(a) ao Solvere ERP",
+    "welcome_sign": "Admin Anna Sebba",
     "show_ui_builder": True,
 }
 JAZZMIN_UI_TWEAKS = {

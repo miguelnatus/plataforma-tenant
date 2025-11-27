@@ -31,10 +31,18 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return format_html(f'<img src="{obj.logo.url}" style="height:24px;object-fit:contain"/>') if obj.logo else "-"
     logo_preview.short_description = "logo"
 
+    # class Meta:
+    #     verbose_name = "Configuração do site"
+    #     verbose_name_plural = "Configurações do site"
+
 class NewsletterSubscriberAdmin(admin.ModelAdmin):
     list_display = ("email", "confirmed", "created_at")
     list_filter = ("confirmed", "created_at")
     search_fields = ("email",)
+
+    class Meta:
+        verbose_name = "Inscrito na newsletter"
+        verbose_name_plural = "Inscritos na newsletter"
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'status', 'destaque', 'published_at', 'created_at')
@@ -42,6 +50,9 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
 
+    # class Meta:
+    #     verbose_name = "Post"
+    #     verbose_name_plural = "Posts"
 # Registra os models no admin site do tenant
 tenant_admin_site.register(SiteSettings, SiteSettingsAdmin)
 tenant_admin_site.register(NewsletterSubscriber, NewsletterSubscriberAdmin)

@@ -4,13 +4,17 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from embed_video.fields import EmbedVideoField
 
 class SiteSettings(models.Model):
-    site_name = models.CharField(max_length=120)
+    site_name = models.CharField("Nome do site", max_length=120)
     primary_color = models.CharField(max_length=7, default="#0ea5e9")
     favicon = models.ImageField(upload_to="branding/", null=True, blank=True)
     logo = models.ImageField(upload_to="branding/", null=True, blank=True)
     seo_title = models.CharField(max_length=70, blank=True)
     seo_description = models.CharField(max_length=160, blank=True)
     profile = models.ImageField(upload_to="branding/", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Configuração do site"
+        verbose_name_plural = "Configurações do site"
 
     def __str__(self):
         return self.site_name
@@ -23,6 +27,10 @@ class NewsletterSubscriber(models.Model):
 
     # Opcional: se quiser isolar por tenant (um e-mail pode se inscrever em múltiplos tenants)
     # tenant = models.ForeignKey("app.Client", null=True, blank=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Inscrito na newsletter"
+        verbose_name_plural = "Inscritos na newsletter"
 
     def __str__(self):
         status = "ok" if self.confirmed else "pendente"
@@ -53,6 +61,8 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["-published_at", "-created_at"]
+        verbose_name = "Post"
+        verbose_name_plural = "Posts"
 
     def __str__(self):
         return self.title
