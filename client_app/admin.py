@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.db import models
 from django.contrib.admin.widgets import AdminFileWidget
-from .models import SiteSettings, NewsletterSubscriber, Post
-from .admin_site import tenant_admin_site # Importa o admin site personalizado
+# Adicionado Course e Enrollment nos imports
+from .models import SiteSettings, NewsletterSubscriber, Post, Course, Enrollment
+from .admin_site import tenant_admin_site
 
 class ImagePreviewWidget(AdminFileWidget):
     def render(self, name, value, attrs=None, renderer=None):
@@ -31,10 +32,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return format_html(f'<img src="{obj.logo.url}" style="height:24px;object-fit:contain"/>') if obj.logo else "-"
     logo_preview.short_description = "logo"
 
-    # class Meta:
-    #     verbose_name = "Configuração do site"
-    #     verbose_name_plural = "Configurações do site"
-
 class NewsletterSubscriberAdmin(admin.ModelAdmin):
     list_display = ("email", "confirmed", "created_at")
     list_filter = ("confirmed", "created_at")
@@ -50,10 +47,26 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
 
-    # class Meta:
-    #     verbose_name = "Post"
-    #     verbose_name_plural = "Posts"
+# --- NOVOS REGISTROS PARA CURSOS ---
+
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ('title', 'price', 'is_active', 'created_at')
+    list_filter = ('is_active', 'created_at')
+    search_fields = ('title', 'summary')
+    prepopulated_fields = {'slug': ('title',)}
+    formfield_overrides = {
+        models.ImageField: {"widget": ImagePreviewWidget}
+    }
+
+class EnrollmentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'course', 'paid', 'date')
+    list_filter = ('paid', 'course', 'date')
+    search_fields = ('user__username', 'user__email', 'course__title')
+    list_editable = ('paid',) # Permite marcar como pago diretamente na lista
+
 # Registra os models no admin site do tenant
 tenant_admin_site.register(SiteSettings, SiteSettingsAdmin)
 tenant_admin_site.register(NewsletterSubscriber, NewsletterSubscriberAdmin)
 tenant_admin_site.register(Post, PostAdmin)
+tenant_admin_site.register(Course, CourseAdmin)
+tenant_admin_site.register(Enrollment, EnrollmentAdmin)

@@ -4,7 +4,9 @@ from django.urls import path
 from .views import (
     HomeTenantView,
     NewsletterSubscribeView, NewsletterSubscribeDoneView,
-    NewsletterConfirmView, NewsletterUnsubscribeView, PostDetailView 
+    NewsletterConfirmView, NewsletterUnsubscribeView, PostDetailView,
+    CourseListView, CourseDetailView, CourseBuyView,
+    StudentLoginView, StudentLogoutView, StudentSignupView 
 )
 from .admin_site import tenant_admin_site
 
@@ -17,6 +19,16 @@ urlpatterns = [
     path("newsletter/subscribe/done/", NewsletterSubscribeDoneView.as_view(), name="newsletter_subscribe_done"),
     path("newsletter/confirm/", NewsletterConfirmView.as_view(), name="newsletter_confirm"),
     path("newsletter/unsubscribe/", NewsletterUnsubscribeView.as_view(), name="newsletter_unsubscribe"),
+
+    # --- ROTAS DE AUTENTICAÇÃO ---
+    path("login/", StudentLoginView.as_view(), name="login"),
+    path("logout/", StudentLogoutView.as_view(), name="logout"),
+    path("signup/", StudentSignupView.as_view(), name="signup"),
+
+    # --- ROTAS DE CURSOS ---
+    path("cursos/", CourseListView.as_view(), name="course_list"),
+    path("cursos/<int:pk>/<slug:slug>/", CourseDetailView.as_view(), name="course_detail"),
+    path("cursos/<int:pk>/comprar/", CourseBuyView.as_view(), name="course_buy"), # Rota lógica de compra
 ]
 
 if settings.DEBUG:

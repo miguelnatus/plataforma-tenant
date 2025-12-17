@@ -1,12 +1,15 @@
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView, CreateView
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
+from django.contrib.auth.views import LoginView, LogoutView
 from django.utils.text import slugify
-from .models import SiteSettings, Post
+from .models import SiteSettings, Post, Course, Enrollment, NewsletterSubscriber
+from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import FormView
 from django.urls import reverse_lazy, reverse
 import secrets
 from .forms import NewsletterForm
-from .models import NewsletterSubscriber
 from django.template.loader import select_template
 from django.core.mail import send_mail
 from urllib.parse import urlparse, parse_qs
@@ -136,3 +139,52 @@ class NewsletterUnsubscribeView(View):
         except NewsletterSubscriber.DoesNotExist:
             return render(request, "newsletter/unsub_ok.html", {"email": None})
 
+class CourseListView(ListView):
+    model = Course
+    template_name = "courses/list.html"  # Você precisará criar este template
+    context_object_name = "courses"
+    queryset = Course.objects.filter(is_active=True)
+
+class CourseDetailView(DetailView):
+    model = Course
+    template_name = "courses/detail.html" # Você precisará criar este template
+    context_object_name = "course"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Verificar se o usuário já comprou o curso
+        if self.request.user.is_authenticated:
+            context['is_enrolled'] = Enrollment.objects.filter(
+                user=self.request.user, 
+                course=self.object, 
+                paid=True
+            ).exists()
+        else:
+            context['is_enrolled'] = False
+        return context
+
+# View simples de compra (apenas matricula o usuário gratuitamente para teste)
+# Para produção, você integraria com Stripe/MercadoPago aqui
+class CourseBuyView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        course = get_object_or_404(Course, pk=pk)
+        Enrollment.objects.get_or_create(user=request.user, course=course, defaults={'paid': True})
+        # Redireciona para o detalhe já com acesso liberado ou página de sucesso
+        return redirect('course_detail', pk=course.pk, slug=course.slug)
+
+# --- AUTENTICAÇÃO ---
+
+class StudentLoginView(LoginView):
+    template_name = "registration/login.html" # Padrão Django ou personalize
+    redirect_authenticated_user = True
+    
+    def get_success_url(self):
+        return reverse_lazy('course_list') # Redireciona para lista de cursos após login
+
+class StudentLogoutView(LogoutView):
+    next_page = reverse_lazy('home_tenant')
+
+class StudentSignupView(CreateView):
+    form_class = UserCreationForm
+    template_name = "registration/signup.html"
+    success_url = reverse_lazy('login')
