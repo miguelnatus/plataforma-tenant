@@ -4,15 +4,16 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.contrib.auth.views import LoginView, LogoutView
 from django.utils.text import slugify
-from .models import SiteSettings, Post, Course, Enrollment, NewsletterSubscriber
+from .models import SiteSettings, Post, Course, Enrollment, NewsletterSubscriber, Supporter
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import FormView
 from django.urls import reverse_lazy, reverse
 import secrets
-from .forms import NewsletterForm
+from .forms import NewsletterForm, SupporterForm
 from django.template.loader import select_template
 from django.core.mail import send_mail
 from urllib.parse import urlparse, parse_qs
+from django.contrib import messages
 
 class HomeTenantView(View):
     def get_template_for_tenant(self, request):
@@ -188,3 +189,15 @@ class StudentSignupView(CreateView):
     form_class = UserCreationForm
     template_name = "registration/signup.html"
     success_url = reverse_lazy('login')
+
+
+class SupporterCreateView(CreateView):
+    model = Supporter
+    form_class = SupporterForm
+    template_name = "supporters/add.html"
+    success_url = reverse_lazy('supporter_add') # Recarrega a mesma página
+
+    def form_valid(self, form):
+        # Adiciona mensagem de sucesso
+        messages.success(self.request, "Cadastro realizado com sucesso! Obrigado pelo apoio.")
+        return super().form_valid(form)

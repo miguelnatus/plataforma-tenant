@@ -1,0 +1,111 @@
+{% extends "annasebba/base.html" %}
+
+{% block title %}Seja um Apoiador - {{ request.tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="bg-[#F3F6FB] py-12 md:py-20">
+  <div class="max-w-4xl mx-auto px-4">
+    
+    <div class="text-center mb-10">
+      <span class="text-[#E87A4F] font-bold tracking-wide uppercase text-sm">Junte-se a nós</span>
+      <h1 class="text-3xl md:text-5xl font-serif font-bold text-[#1B3556] mt-2">
+        Faça parte dessa mudança
+      </h1>
+      <p class="mt-4 text-[#3E5A7B] text-lg max-w-2xl mx-auto">
+        Preencha o formulário abaixo para oficializar seu apoio e receber informações exclusivas sobre nossa campanha e projetos.
+      </p>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <strong class="font-bold">Sucesso!</strong>
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <div class="border-b border-gray-100 pb-6">
+            <h3 class="text-xl font-serif font-bold text-[#1B3556] mb-4">Dados Pessoais</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-1 md:col-span-2">
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.name.label }}</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+                 <div>
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.phone.label }}</label>
+                    {{ form.phone }}
+                    {{ form.phone.errors }}
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.birth_date.label }}</label>
+                    {{ form.birth_date }}
+                    {{ form.birth_date.errors }}
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.profession.label }}</label>
+                    {{ form.profession }}
+                    {{ form.profession.errors }}
+                </div>
+            </div>
+        </div>
+
+        <div class="border-b border-gray-100 pb-6">
+            <h3 class="text-xl font-serif font-bold text-[#1B3556] mb-4">Localização</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-1 md:col-span-2">
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.address.label }}</label>
+                    {{ form.address }}
+                    {{ form.address.errors }}
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.zip_code.label }}</label>
+                    {{ form.zip_code }}
+                    {{ form.zip_code.errors }}
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.admin_region.label }}</label>
+                    {{ form.admin_region }}
+                    {{ form.admin_region.errors }}
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-xl font-serif font-bold text-[#1B3556] mb-4">Dados Eleitorais</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.electoral_zone.label }}</label>
+                    {{ form.electoral_zone }}
+                    {{ form.electoral_zone.errors }}
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-[#3E5A7B] mb-2">{{ form.section.label }}</label>
+                    {{ form.section }}
+                    {{ form.section.errors }}
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-4">
+            <button type="submit" class="w-full md:w-auto px-8 py-4 bg-[#E87A4F] text-white font-bold rounded-lg hover:bg-[#d66a3e] transition shadow-lg transform hover:-translate-y-1">
+                Confirmar Apoio
+            </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

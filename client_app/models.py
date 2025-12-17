@@ -139,3 +139,30 @@ class Post(models.Model):
                 i += 1
             self.slug = slug
         super().save(*args, **kwargs)
+
+
+class Supporter(models.Model):
+    name = models.CharField("Nome", max_length=200)
+    profession = models.CharField("Profissão", max_length=100)
+    birth_date = models.DateField("Data de nascimento")
+    phone = models.CharField("Celular/Whatsapp", max_length=20)
+    email = models.EmailField("E-mail")
+    
+    # Endereço
+    address = models.CharField("Endereço", max_length=255)
+    zip_code = models.CharField("CEP", max_length=20)
+    admin_region = models.CharField("Região Administrativa", max_length=100)
+    
+    # Dados Eleitorais
+    electoral_zone = models.CharField("Zona eleitoral", max_length=20)
+    section = models.CharField("Seção", max_length=20)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Apoiador"
+        verbose_name_plural = "Apoiadores"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name

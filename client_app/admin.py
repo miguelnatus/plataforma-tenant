@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from django.db import models
 from django.contrib.admin.widgets import AdminFileWidget
 # Adicionado Course e Enrollment nos imports
-from .models import SiteSettings, NewsletterSubscriber, Post, Course, Enrollment
+from .models import SiteSettings, NewsletterSubscriber, Post, Course, Enrollment, Supporter
 from .admin_site import tenant_admin_site
 
 class ImagePreviewWidget(AdminFileWidget):
@@ -64,9 +64,19 @@ class EnrollmentAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__email', 'course__title')
     list_editable = ('paid',) # Permite marcar como pago diretamente na lista
 
+class SupporterAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'email', 'admin_region', 'created_at')
+    list_filter = ('admin_region', 'created_at')
+    search_fields = ('name', 'email', 'phone', 'zip_code')
+    date_hierarchy = 'created_at'
+
+
+
+
 # Registra os models no admin site do tenant
 tenant_admin_site.register(SiteSettings, SiteSettingsAdmin)
 tenant_admin_site.register(NewsletterSubscriber, NewsletterSubscriberAdmin)
 tenant_admin_site.register(Post, PostAdmin)
 tenant_admin_site.register(Course, CourseAdmin)
 tenant_admin_site.register(Enrollment, EnrollmentAdmin)
+tenant_admin_site.register(Supporter, SupporterAdmin)
