@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, TemplateView, CreateView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.contrib.auth.views import LoginView, LogoutView
@@ -191,13 +191,16 @@ class StudentSignupView(CreateView):
     success_url = reverse_lazy('login')
 
 
+class SupporterSuccessView(TemplateView):
+    template_name = "supporters/success.html"
+
 class SupporterCreateView(CreateView):
     model = Supporter
     form_class = SupporterForm
     template_name = "supporters/add.html"
-    success_url = reverse_lazy('supporter_add') # Recarrega a mesma página
+    success_url = reverse_lazy('supporter_success') # <--- MUDANÇA AQUI (era 'supporter_add')
 
     def form_valid(self, form):
-        # Adiciona mensagem de sucesso
-        messages.success(self.request, "Cadastro realizado com sucesso! Obrigado pelo apoio.")
+        # Não precisamos mais da mensagem de sucesso na mesma tela, pois vai mudar de página
+        # Mas se quiser manter no log, pode deixar.
         return super().form_valid(form)

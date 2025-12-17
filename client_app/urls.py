@@ -6,7 +6,8 @@ from .views import (
     NewsletterSubscribeView, NewsletterSubscribeDoneView,
     NewsletterConfirmView, NewsletterUnsubscribeView, PostDetailView,
     CourseListView, CourseDetailView, CourseBuyView,
-    StudentLoginView, StudentLogoutView, StudentSignupView, SupporterCreateView 
+    StudentLoginView, StudentLogoutView, StudentSignupView, SupporterCreateView,
+    SupporterSuccessView, 
 )
 from .admin_site import tenant_admin_site
 
@@ -31,6 +32,8 @@ urlpatterns = [
     path("cursos/<int:pk>/comprar/", CourseBuyView.as_view(), name="course_buy"), # Rota lógica de compra
 
     path("apoiadores/", SupporterCreateView.as_view(), name="supporter_add"),
+    path("apoiadores/obrigado/", SupporterSuccessView.as_view(), name="supporter_success"),
+    
 ]
 
 if settings.DEBUG:
