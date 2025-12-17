@@ -7,12 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     {% block head_extra %}
     {% if settings.favicon %}
-    {% comment %} <link rel="icon" href="{{ settings.favicon }}" type="image/png"> {% endcomment %}
-    <link rel="shortcut icon" href="{{ settings.favicon }}" type="image/x-icon">
-    <link rel="icon" href="{{ settings.favicon }}" type="image/x-icon">
-    
+    <link rel="shortcut icon" href="{{ settings.favicon.url }}" type="image/x-icon">
+    <link rel="icon" href="{{ settings.favicon.url }}" type="image/x-icon">
     {% endif %}
-    <!-- Fonts e estilos do tema "Mandato em Ação" -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -29,11 +26,9 @@
     {% endblock %}
   </head>
   <body class="bg-white text-zinc-900">
-    <!-- Header -->
     <header class="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div class="flex items-center gap-6">
-          {% comment %} <a href="/" class="font-semibold">{{ request.tenant.name|default:"Hybrid" }}</a> {% endcomment %}
           <a href="/" class="flex items-center gap-3 font-semibold" aria-label="{{ request.tenant.name|default:'Hybrid' }}">
             {% if settings and settings.logo %}
                 <img src="{{ settings.logo.url }}" alt="{{ request.tenant.name|default:'Hybrid' }}" class="h-8 w-auto object-contain">
@@ -41,49 +36,61 @@
                 {{ request.tenant.name|default:"Hybrid" }}
             {% endif %}
           </a>
-          <nav class="hidden md:flex gap-4">
-            <a class="hover:text-zinc-600" href="{% url 'course_list' %}">Cursos</a>
-            <a class="hover:text-zinc-600" href="/loja">Loja</a>
-            <a class="hover:text-zinc-600" href="/comunidade">Comunidade</a>
-          </nav>
+          
+          {# --- MENU DE NAVEGAÇÃO --- #}
+          <nav class="hidden md:flex gap-6 font-medium text-sm">
+            <a class="hover:text-[#E87A4F] transition-colors" href="{% url 'home_tenant' %}">Início</a>
+            <a class="hover:text-[#E87A4F] transition-colors" href="{% url 'course_list' %}">Cursos</a> 
+            </nav>
         </div>
-        <div class="flex items-center gap-3">
-          <a class="text-sm px-3 py-1.5 bg-zinc-900 text-white rounded hover:bg-zinc-800" href="/entrar">Entrar</a>
-          {% comment %} <a class="text-sm px-3 py-1.5 border rounded hover:bg-zinc-50" href="/publicar">Criar publicação</a>
-          <a class="text-sm px-3 py-1.5 bg-zinc-900 text-white rounded hover:bg-zinc-800" href="/vender">Vender produto</a> {% endcomment %}
+
+        {# --- ÁREA DE LOGIN / CADASTRO --- #}
+        <div class="flex items-center gap-4">
+          {% if user.is_authenticated %}
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-zinc-600 hidden sm:inline">
+                    Olá, {{ user.first_name|default:user.username }}
+                </span>
+                <form action="{% url 'logout' %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-xs uppercase font-bold text-[#E87A4F] hover:text-[#d66a3e] border border-[#E87A4F] px-3 py-1.5 rounded transition">
+                        Sair
+                    </button>
+                </form>
+            </div>
+          {% else %}
+            <a class="text-sm font-bold text-[#0D2B4F] hover:text-[#E87A4F] transition" href="{% url 'login' %}">
+                Entrar
+            </a>
+            <a class="text-sm px-4 py-2 bg-[#0D2B4F] text-white rounded-lg hover:bg-[#1a4a8a] transition shadow-md font-bold" href="{% url 'signup' %}">
+                Criar conta
+            </a>
+          {% endif %}
         </div>
+
       </div>
     </header>
 
     {% block hero %}{% endblock %}
 
-    <main class="max-w-7xl mx-auto px-4 py-10">
+    <main class="max-w-7xl mx-auto px-4 py-10 min-h-[50vh]">
       {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 py-8">
+    <footer class="bg-white border-t border-gray-200 py-8 mt-auto">
       <div class="max-w-7xl mx-auto px-4 text-center text-[#3E5A7B]">
-        <nav class="flex gap-4 justify-center mb-2">
-          <a href="/sobre">Sobre</a>
-          <a href="/ajuda">Ajuda</a>
-          <a href="/blog">Blog</a>
-          <a href="/apps">App</a>
-          <a href="/politicas">Políticas</a>
+        <nav class="flex gap-4 justify-center mb-2 text-sm font-medium">
+          <a href="/sobre" class="hover:text-[#0D2B4F]">Sobre</a>
+          <a href="/ajuda" class="hover:text-[#0D2B4F]">Ajuda</a>
+          <a href="/politicas" class="hover:text-[#0D2B4F]">Políticas</a>
         </nav>
-        <p class="mt-2">© {{ current_time|date:"Y" }} {{ request.tenant.name|default:"Hybrid" }}</p>
-        <div class="mt-4 flex justify-center gap-6">
-          <a href="#" class="hover:underline">Facebook</a>
-          <a href="#" class="hover:underline">Instagram</a>
-          <a href="#" class="hover:underline">YouTube</a>
-        </div>
+        <p class="mt-4 text-sm">© {% now "Y" %} {{ request.tenant.name|default:"Hybrid" }}. Todos os direitos reservados.</p>
       </div>
     </footer>
 
     {% block body_extra %}
-    <!-- CTA flutuante opcional -->
-    <div class="fixed top-3 right-4 z-40">
-      <a href="#newsletter" class="btn-accent font-bold py-2 px-4 rounded-lg text-sm shadow-sm">Fale Comigo</a>
+    <div class="fixed top-3 right-4 z-40 md:hidden"> 
+      {# Em mobile, talvez você queira apenas um ícone ou manter escondido para não cobrir o menu #}
     </div>
     {% endblock %}
   </body>

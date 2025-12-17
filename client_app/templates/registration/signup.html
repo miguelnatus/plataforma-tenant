@@ -1,0 +1,54 @@
+{% extends "annasebba/base.html" %}
+
+{% block title %}Criar Conta - {{ request.tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center bg-[#F3F6FB] py-16 px-4">
+  <div class="bg-white p-8 md:p-10 rounded-3xl shadow-lg w-full max-w-md">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-serif font-bold text-[#1B3556]">Criar Conta</h2>
+      <p class="text-[#7A8CA5] mt-2">Junte-se à nossa comunidade de aprendizado</p>
+    </div>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      
+      {% for field in form %}
+        <div>
+          <label class="block text-sm font-bold text-[#3E5A7B] mb-1">{{ field.label }}</label>
+           {# O widget do Django para passwords e outros inputs complexos pode variar, aqui simplificamos a class #}
+           {{ field }} 
+           {# Dica: Para estilizar o form.as_p do Django perfeitamente, recomenda-se usar django-widget-tweaks ou iterar manualmente como no login, mas para signup padrão o Django já renderiza inputs #}
+           
+           {% if field.help_text %}
+             <p class="text-xs text-gray-400 mt-1">{{ field.help_text|safe }}</p>
+           {% endif %}
+           {% if field.errors %}
+             <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+           {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="w-full py-3 px-6 mt-4 rounded-lg bg-[#E87A4F] text-white font-bold hover:bg-[#d66a3e] transition shadow-md">
+        Registar-se
+      </button>
+    </form>
+
+    <div class="mt-6 text-center">
+      <p class="text-[#7A8CA5] text-sm">
+        Já tem conta? 
+        <a href="{% url 'login' %}" class="text-[#0D2B4F] font-bold hover:underline">Fazer Login</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+{# Script simples para adicionar classes CSS aos inputs gerados automaticamente pelo Django #}
+<script>
+  document.querySelectorAll('input').forEach(input => {
+    if(input.type !== 'checkbox' && input.type !== 'submit' && input.type !== 'hidden') {
+        input.classList.add('w-full', 'px-4', 'py-2', 'rounded-lg', 'border', 'border-gray-200', 'focus:border-[#E87A4F]', 'focus:ring-2', 'focus:ring-[#E87A4F]/20', 'outline-none', 'transition');
+    }
+  });
+</script>
+{% endblock %}

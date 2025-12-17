@@ -25,14 +25,12 @@ class SiteSettings(models.Model):
 class Course(models.Model):
     title = models.CharField("Título", max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
-    summary = models.TextField("Resumo curto", blank=True)
-    description = RichTextUploadingField("Descrição completa")
-    cover_image = models.ImageField(upload_to="courses/", null=True, blank=True)
+    summary = models.TextField("Resumo curto", blank=True, help_text="Aparece no card do curso")
+    description = RichTextUploadingField("Descrição completa", help_text="Conteúdo visível apenas para alunos")
+    cover_image = models.ImageField("Imagem de Capa", upload_to="courses/", null=True, blank=True)
     price = models.DecimalField("Preço", max_digits=10, decimal_places=2, default=0.00)
     is_active = models.BooleanField("Ativo para venda?", default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    # Se quiser colocar aulas/módulos, pode criar models relacionados ou usar o RichText por enquanto
     
     class Meta:
         verbose_name = "Curso/Treinamento"
@@ -42,24 +40,46 @@ class Course(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        # Gera o slug automaticamente se não estiver preenchido
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
+    def has_access(self, user):
+        """
+        Verifica se o usuário tem acesso a este curso.
+        Retorna True se tiver matrícula paga, False se não.
+        """
+        if not user.is_authenticated:
+            return False
+            
+        # Verifica se existe matrícula paga (paid=True) na tabela Enrollment
+        # O related_name='students' definido abaixo permite usar self.students
+        return self.students.filter(user=user, paid=True).exists()
+
+
 class Enrollment(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="enrollments")
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="students")
-    date = models.DateTimeField(auto_now_add=True)
-    paid = models.BooleanField("Pago", default=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name="enrollments"
+    )
+    course = models.ForeignKey(
+        Course, 
+        on_delete=models.CASCADE, 
+        related_name="students"
+    )
+    date = models.DateTimeField("Data da Matrícula", auto_now_add=True)
+    paid = models.BooleanField("Pago / Acesso Liberado", default=False)
     
     class Meta:
-        unique_together = ('user', 'course')
+        unique_together = ('user', 'course') # Impede matricula duplicada no mesmo curso
         verbose_name = "Matrícula"
         verbose_name_plural = "Matrículas"
 
     def __str__(self):
-        return f"{self.user} em {self.course}"
-
+        status = "Pago" if self.paid else "Pendente"
+        return f"{self.user} - {self.course} ({status})"
     
 class NewsletterSubscriber(models.Model):
     email = models.EmailField(unique=True)
