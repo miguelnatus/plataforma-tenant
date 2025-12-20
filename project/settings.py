@@ -21,7 +21,7 @@ ALLOWED_HOSTS = env.list(
 # Proteções de CSRF (exigem esquema)
 CSRF_TRUSTED_ORIGINS = env.list(
     "CSRF_TRUSTED_ORIGINS",
-    default=["http://annasebba.com.br", "http://www.annasebba.com.br"],
+    default=["https://annasebba.com.br", "https://www.annasebba.com.br"],
 )
 
 # Apps (multi-tenant + admin com Jazzmin)
@@ -37,7 +37,6 @@ SHARED_APPS = [
     "django.contrib.messages",
     "whitenoise.runserver_nostatic",# WhiteNoise desabilita static do runserver
     "django.contrib.staticfiles",
-    "sslserver",
 ]
 
 TENANT_APPS = [
