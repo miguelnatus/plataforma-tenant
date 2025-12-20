@@ -109,3 +109,51 @@
   </div>
 </div>
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const inputCep = document.getElementById('id_zip_code');
+        const inputEndereco = document.getElementById('id_address');
+        const inputRegiao = document.getElementById('id_admin_region');
+
+        if (inputCep) {
+            // 2. Escutar quando o usuário sai do campo (blur)
+            inputCep.addEventListener('blur', function() {
+                // Remove tudo que não é número
+                let cep = this.value.replace(/\D/g, '');
+
+                if (cep.length === 8) {
+                    // Feedback visual (opcional)
+                    inputEndereco.value = "Buscando...";
+                    
+                    // 3. Chamada à API do ViaCEP
+                    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.erro) {
+                                // 4. Preencher os campos
+                                inputEndereco.value = data.logradouro;
+                                
+                                // Como sua model tem 'admin_region', vou juntar Bairro e Cidade
+                                // Ex: "Centro - Taquara/RS"
+                                inputRegiao.value = `${data.localidade} - ${data.uf}`;
+                                
+                                // Focar no campo de número (se existisse) ou próximo campo lógico
+                                // inputNumero.focus(); 
+                            } else {
+                                alert("CEP não encontrado.");
+                                inputEndereco.value = "";
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Erro na busca do CEP:", error);
+                            inputEndereco.value = "";
+                        });
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

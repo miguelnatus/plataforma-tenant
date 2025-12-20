@@ -1,19 +1,22 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+import secrets
+from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, TemplateView, CreateView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.contrib.auth.views import LoginView, LogoutView
-from django.utils.text import slugify
+from django.http import HttpResponse
 from .models import SiteSettings, Post, Course, Enrollment, NewsletterSubscriber, Supporter
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import FormView
 from django.urls import reverse_lazy, reverse
-import secrets
+
 from .forms import NewsletterForm, SupporterForm
 from django.template.loader import select_template
 from django.core.mail import send_mail
 from urllib.parse import urlparse, parse_qs
-from django.contrib import messages
+
+# from django.contrib import messages
 
 class HomeTenantView(View):
     def get_template_for_tenant(self, request):
@@ -204,3 +207,29 @@ class SupporterCreateView(CreateView):
         # Não precisamos mais da mensagem de sucesso na mesma tela, pois vai mudar de página
         # Mas se quiser manter no log, pode deixar.
         return super().form_valid(form)
+    
+
+class SupporterMapView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Supporter
+    template_name = "supporters/list.html" # Seu template principal
+    context_object_name = 'supporters' # Importante para bater com seu template
+    paginate_by = 20 
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_queryset(self):
+        qs = Supporter.objects.exclude(latitude__isnull=True).order_by('-created_at')
+        query = self.request.GET.get('q')
+        if query:
+            qs = qs.filter(
+                Q(name__icontains=query) | 
+                Q(email__icontains=query) |
+                Q(admin_region__icontains=query)
+            )
+        return qs
+
+    def get_template_names(self):
+        if self.request.htmx:
+            return ["supporters/partials/list_content.html"]
+        return [self.template_name]

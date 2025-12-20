@@ -4,6 +4,7 @@ from django.utils.text import slugify
 from ckeditor_uploader.fields import RichTextUploadingField
 from embed_video.fields import EmbedVideoField
 from django.contrib.auth.models import User
+from geopy.geocoders import Nominatim
 
 class SiteSettings(models.Model):
     site_name = models.CharField("Nome do site", max_length=120)
@@ -157,6 +158,10 @@ class Supporter(models.Model):
     electoral_zone = models.CharField("Zona eleitoral", max_length=20)
     section = models.CharField("Seção", max_length=20)
     
+    # NOVOS CAMPOS: Para guardar a posição no mapa
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -166,3 +171,88 @@ class Supporter(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+            if not self.latitude or not self.longitude:
+                try:
+                    geolocator = Nominatim(user_agent="plataforma_tenant_geo")
+                    
+                    # --- ESTRATÉGIA FOCADA NA CIDADE ---
+                    # Vai buscar algo como: "Taquara - RS, Brazil"
+                    # Isso coloca o pino no centro da cidade.
+                    endereco_busca = f"{self.admin_region}, Brazil"
+                    
+                    location = geolocator.geocode(endereco_busca)
+                    
+                    if location:
+                        self.latitude = location.latitude
+                        self.longitude = location.longitude
+                    else:
+                        # Plano B: Se falhar pelo nome da cidade, tenta pelo CEP
+                        location_cep = geolocator.geocode(f"{self.zip_code}, Brazil")
+                        if location_cep:
+                            self.latitude = location_cep.latitude
+                            self.longitude = location_cep.longitude
+                            
+                except Exception as e:
+                    print(f"Erro ao geocodificar: {e}")
+
+            super().save(*args, **kwargs)
+
+# class Supporter(models.Model):
+#     name = models.CharField("Nome", max_length=200)
+#     profession = models.CharField("Profissão", max_length=100)
+#     birth_date = models.DateField("Data de nascimento")
+#     phone = models.CharField("Celular/Whatsapp", max_length=20)
+#     email = models.EmailField("E-mail")
+    
+#     # Endereço
+#     address = models.CharField("Endereço", max_length=255)
+#     zip_code = models.CharField("CEP", max_length=20)
+#     admin_region = models.CharField("Região Administrativa", max_length=100)
+    
+#     # Dados Eleitorais
+#     electoral_zone = models.CharField("Zona eleitoral", max_length=20)
+#     section = models.CharField("Seção", max_length=20)
+    
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     class Meta:
+#         verbose_name = "Apoiador"
+#         verbose_name_plural = "Apoiadores"
+#         ordering = ['-created_at']
+
+#     def __str__(self):
+#         return self.name
+    
+# class Localizacao(models.Model):
+#     nome = models.CharField(max_length=100)
+#     cidade = models.CharField(max_length=100)
+#     cep = models.CharField(max_length=9) # Formato 00000-000
+
+#     # Armazenamos as coordenadas para não consultar a API toda vez que carregar a página
+#     latitude = models.FloatField(blank=True, null=True)
+#     longitude = models.FloatField(blank=True, null=True)
+
+#     def save(self, *args, **kwargs):
+#         # Só busca se não tiver latitude ou se o CEP mudou (lógica simplificada aqui)
+#         if not self.latitude or not self.longitude:
+#             # O user_agent é obrigatório para identificar sua app
+#             geolocator = Nominatim(user_agent="meu_projeto_django_geo")
+
+#             # Tenta buscar pelo CEP e Cidade para ser mais preciso
+#             endereco_busca = f"{self.cep}, {self.cidade}, Brazil"
+
+#             try:
+#                 location = geolocator.geocode(endereco_busca)
+#                 if location:
+#                     self.latitude = location.latitude
+#                     self.longitude = location.longitude
+#             except Exception as e:
+#                 # Lidar com falhas de conexão ou timeout
+#                 print(f"Erro ao geocodificar: {e}")
+
+#         super().save(*args, **kwargs)
+
+#     def __str__(self):
+#         return self.nome

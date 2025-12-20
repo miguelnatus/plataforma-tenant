@@ -7,7 +7,7 @@ from .views import (
     NewsletterConfirmView, NewsletterUnsubscribeView, PostDetailView,
     CourseListView, CourseDetailView, CourseBuyView,
     StudentLoginView, StudentLogoutView, StudentSignupView, SupporterCreateView,
-    SupporterSuccessView, 
+    SupporterSuccessView, SupporterMapView
 )
 from .admin_site import tenant_admin_site
 
@@ -33,6 +33,10 @@ urlpatterns = [
 
     path("apoiadores/", SupporterCreateView.as_view(), name="supporter_add"),
     path("apoiadores/obrigado/", SupporterSuccessView.as_view(), name="supporter_success"),
+
+    path('mapa-gerencial/', SupporterMapView.as_view(), name='supporter_map'),
+
+    
     
 ]
 

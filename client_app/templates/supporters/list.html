@@ -1,0 +1,154 @@
+{% extends "annasebba/base.html" %}
+
+{% block title %}Gestão de Apoiadores{% endblock %}
+
+{# 1. CSS e HTMX no topo (Bloco head_extra) #}
+{% block head_extra %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+        .htmx-indicator { display:none; }
+        .htmx-request .htmx-indicator { display:inline; }
+        .htmx-request.htmx-indicator { display:inline; }
+    </style>
+{% endblock %}
+
+{# 2. Conteúdo Visual (Bloco content) #}
+{% block content %}
+<div class="bg-[#F3F6FB] min-h-screen py-6">
+  <div class="max-w-7xl mx-auto px-4">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div>
+            <h1 class="text-3xl font-serif font-bold text-[#1B3556]">Base de Apoiadores</h1>
+            <p class="text-[#3E5A7B]">Total: {{ page_obj.paginator.count|default:supporters.count }}</p>
+        </div>
+        </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        
+        <div class="lg:col-span-1 space-y-4">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <label class="block text-sm font-bold text-[#1B3556] mb-2">Buscar Apoiador</label>
+                <div class="relative">
+                    <input type="text" 
+                           name="q"
+                           class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#E87A4F] focus:border-transparent outline-none transition"
+                           placeholder="Nome, profissão ou região..."
+                           hx-get="{{ request.path }}"
+                           hx-trigger="keyup changed delay:500ms"
+                           hx-target="#tabela-corpo"
+                           hx-indicator="#loading">
+                    
+                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <p id="loading" class="htmx-indicator text-xs text-[#E87A4F] font-bold mt-2">Atualizando mapa e lista...</p>
+            </div>
+            
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <p class="text-sm text-blue-800">
+                    <strong>Dica:</strong> O mapa mostra automaticamente apenas as pessoas listadas na tabela ao lado.
+                </p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div id="mapa" class="h-80 w-full rounded-2xl shadow-lg border border-gray-200 z-0 relative"></div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50 text-[#3E5A7B] text-sm uppercase tracking-wider border-b border-gray-100">
+                        <th class="p-4 font-bold">Nome / Email</th>
+                        <th class="p-4 font-bold">Contato</th>
+                        <th class="p-4 font-bold">Localização</th>
+                        <th class="p-4 font-bold">Dados Eleitorais</th>
+                        <th class="p-4 font-bold">Data</th>
+                    </tr>
+                </thead>
+                
+                <tbody id="tabela-corpo" class="divide-y divide-gray-100">
+                    {% include "supporters/partials/list_content.html" %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if is_paginated %}
+        <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-center">
+            <div class="flex gap-2 text-sm">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-[#1B3556]">Anterior</a>
+                {% endif %}
+                <span class="px-3 py-1 font-bold text-[#E87A4F]">Pág. {{ page_obj.number }}</span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-[#1B3556]">Próxima</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{# 3. Scripts JS no final (Bloco extra_scripts) #}
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // 1. Inicializa o Mapa (Centralizado no Brasil)
+    var map = L.map('mapa').setView([-14.235, -51.925], 4); 
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    // Grupo de camadas para poder limpar os pinos antigos na busca
+    var layerGroup = L.layerGroup().addTo(map);
+
+    // 2. Função Global para atualizar os pinos
+    // (Será chamada pelo HTMX e pelo carregamento inicial)
+    window.atualizarPinos = function(dados) {
+        layerGroup.clearLayers(); // Remove pinos antigos
+        
+        var bounds = L.latLngBounds(); // Para o auto-zoom
+
+        dados.forEach(function(d) {
+            // Cria o pino
+            var marker = L.marker([d.lat, d.lng])
+             .bindPopup(`<div class="text-sm font-bold text-[#1B3556]">${d.nome}</div><div class="text-xs text-gray-600">${d.info}</div>`)
+             .addTo(layerGroup);
+            
+            bounds.extend([d.lat, d.lng]);
+        });
+
+        // Se tiver pinos, ajusta o zoom para mostrar todos
+        if (dados.length > 0) {
+            map.fitBounds(bounds, {padding: [50, 50]});
+        }
+    };
+
+    // 3. Carregamento Inicial (Dados vindos do Django na primeira abertura)
+    var dadosIniciais = [
+        {% for s in supporters %}
+            {% if s.latitude and s.longitude %}
+            {
+                lat: {{ s.latitude|stringformat:"f" }},
+                lng: {{ s.longitude|stringformat:"f" }},
+                nome: "{{ s.name }}",
+                info: "{{ s.profession }} - {{ s.admin_region }}"
+            },
+            {% endif %}
+        {% endfor %}
+    ];
+
+    // Roda a função assim que carrega
+    atualizarPinos(dadosIniciais);
+
+</script>
+{% endblock %}

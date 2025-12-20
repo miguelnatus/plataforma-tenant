@@ -21,13 +21,14 @@ ALLOWED_HOSTS = env.list(
 # Proteções de CSRF (exigem esquema)
 CSRF_TRUSTED_ORIGINS = env.list(
     "CSRF_TRUSTED_ORIGINS",
-    default=["https://annasebba.com.br", "https://www.annasebba.com.br"],
+    default=["http://annasebba.com.br", "http://www.annasebba.com.br"],
 )
 
 # Apps (multi-tenant + admin com Jazzmin)
 SHARED_APPS = [
     "jazzmin",                      # Jazzmin antes do admin
     "django_tenants",               # Multi-tenant (schemas)
+    'django_htmx',                  # HTMX
     "app",                          # App público/compartilhado (TENANT_MODEL/TENANT_DOMAIN_MODEL)
     "django.contrib.admin",
     "django.contrib.auth",
@@ -36,6 +37,7 @@ SHARED_APPS = [
     "django.contrib.messages",
     "whitenoise.runserver_nostatic",# WhiteNoise desabilita static do runserver
     "django.contrib.staticfiles",
+    "sslserver",
 ]
 
 TENANT_APPS = [
@@ -59,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = "project.urls"

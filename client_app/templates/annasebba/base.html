@@ -4,15 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}{{ request.tenant.name }} – Conteúdo + Produtos{% endblock %}</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    {% block head_extra %}
+    
     {% if settings.favicon %}
     <link rel="shortcut icon" href="{{ settings.favicon.url }}" type="image/x-icon">
     <link rel="icon" href="{{ settings.favicon.url }}" type="image/x-icon">
     {% endif %}
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
       body { font-family: 'Inter', sans-serif; background-color: #F7F2E9; color: #0D2B4F; }
       h1, h2, h3, h4, .font-serif { font-family: 'Merriweather', serif; }
@@ -23,9 +26,11 @@
       .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
       .section-accent { background-color: #E87A4F; color: #FFF; }
     </style>
-    {% endblock %}
+
+    {% block head_extra %}{% endblock %}
   </head>
-  <body class="bg-white text-zinc-900">
+  
+  <body class="bg-white text-zinc-900 flex flex-col min-h-screen">
     <header class="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div class="flex items-center gap-6">
@@ -37,14 +42,11 @@
             {% endif %}
           </a>
           
-          {# --- MENU DE NAVEGAÇÃO --- #}
           <nav class="hidden md:flex gap-6 font-medium text-sm">
             <a class="hover:text-[#E87A4F] transition-colors" href="{% url 'home_tenant' %}">Início</a>
-            <a class="hover:text-[#E87A4F] transition-colors" href="{% url 'course_list' %}">Cursos</a> 
             </nav>
         </div>
 
-        {# --- ÁREA DE LOGIN / CADASTRO --- #}
         <div class="flex items-center gap-4">
           {% if user.is_authenticated %}
             <div class="flex items-center gap-3">
@@ -67,13 +69,12 @@
             </a>
           {% endif %}
         </div>
-
       </div>
     </header>
 
     {% block hero %}{% endblock %}
 
-    <main class="max-w-7xl mx-auto px-4 py-10 min-h-[50vh]">
+    <main class="max-w-7xl mx-auto px-4 py-10 flex-grow">
       {% block content %}{% endblock %}
     </main>
 
@@ -89,9 +90,9 @@
     </footer>
 
     {% block body_extra %}
-    <div class="fixed top-3 right-4 z-40 md:hidden"> 
-      {# Em mobile, talvez você queira apenas um ícone ou manter escondido para não cobrir o menu #}
-    </div>
+    <div class="fixed top-3 right-4 z-40 md:hidden"></div>
     {% endblock %}
+
+    {% block extra_scripts %}{% endblock %}
   </body>
 </html>
