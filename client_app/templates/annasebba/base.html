@@ -44,7 +44,15 @@
           
           <nav class="hidden md:flex gap-6 font-medium text-sm">
             <a class="hover:text-[#E87A4F] transition-colors" href="{% url 'home_tenant' %}">Início</a>
-            </nav>
+          </nav>
+
+          {% if user.is_authenticated and user.is_superuser %}
+            <a class="hover:text-[#E87A4F] transition-colors"
+              href="{% url 'supporter_map' %}">
+              Mapa gerencial
+            </a>
+          {% endif %}
+
         </div>
 
         <div class="flex items-center gap-4">
