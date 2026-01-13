@@ -26,21 +26,22 @@ CSRF_TRUSTED_ORIGINS = env.list(
 
 # Apps (multi-tenant + admin com Jazzmin)
 SHARED_APPS = [
-    "jazzmin",                      # Jazzmin antes do admin
-    "django_tenants",               # Multi-tenant (schemas)
-    'django_htmx',                  # HTMX
-    "app",                          # App público/compartilhado (TENANT_MODEL/TENANT_DOMAIN_MODEL)
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
+    "jazzmin",                      
+    "django_tenants",               
+    'django_htmx',                  
+    "app",                          
+    "django.contrib.contenttypes",  # só isso dos contrib
+    "django.contrib.sessions",      # sessions shared (essencial!)
     "django.contrib.messages",
-    "whitenoise.runserver_nostatic",# WhiteNoise desabilita static do runserver
+    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
 ]
 
 TENANT_APPS = [
-    "client_app",                   # App específico dos tenants
+    "django.contrib.auth",          # 👈 auth por tenant
+    "django.contrib.admin",         # 👈 admin por tenant
+    "django.contrib.contenttypes",
+    "client_app",                   
     "ckeditor",
     "ckeditor_uploader",
     "embed_video",
